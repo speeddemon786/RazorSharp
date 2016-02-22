@@ -5,5 +5,5 @@ Currently configured with SQLCompact database but includes .sql files to create 
 
 To access the admin portal browse to /Admin
 
-Admin Username: Admin
+Admin Username: Admin  
 Admin Password: Admin1234
