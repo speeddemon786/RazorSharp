@@ -1,0 +1,216 @@
+﻿@{
+    Page.Title = "Admin :: Site Settings";
+    Page.Heading = "Site Settings";
+
+    var siteName = Request.Unvalidated("siteName");
+    var siteAnalytics = Request.Unvalidated("siteAnalytics");
+    var smtpServer = Request["smtpServer"];
+    var smtpPort = Request["smtpPort"];
+    bool smtpSSL = Request["smtpSSL"].AsBool();
+    var smtpUser = Request["smtpUser"];
+    var smtpPass= Request["smtpPwd"];
+    var smtpFrom = Request["smtpFrom"];
+    var smtpTo = Request["smtpTo"];
+    var Message = string.Empty;
+
+    Validation.RequireField("siteName");
+    Validation.RequireField("smtpServer");
+    Validation.RequireField("smtpPort");
+    Validation.RequireField("smtpUser");
+    Validation.RequireField("smtpPwd");
+    Validation.RequireField("smtpFrom");
+    Validation.RequireField("smtpTo");
+    Validation.Add("smtpPort", Validator.Integer());
+    Validation.Add("SmtpFrom",Validator.Regex(@"\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"));
+    Validation.Add("SmtpTo",Validator.Regex(@"\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"));
+
+    if (IsPost)
+    {
+        if(Validation.IsValid())
+        {
+            try
+            {
+                Settings.UpdateSetting(siteName, "siteName");
+                Settings.UpdateSetting(siteAnalytics, "siteAnalytics");
+                Settings.UpdateSetting(smtpServer, "smtpServer");
+                Settings.UpdateSetting(smtpPort, "smtpPort");
+                Settings.UpdateSetting(smtpSSL.ToString(), "smtpSSL");
+                Settings.UpdateSetting(smtpUser, "smtpUser");
+                Settings.UpdateSetting(smtpPass, "smtpPass");
+                Settings.UpdateSetting(smtpFrom, "smtpFrom");
+                Settings.UpdateSetting(smtpTo, "smtpTo");
+
+                Message = Helpers.alertSuccess("Settings Successfully Saved!");
+
+                //refresh all settings for the site
+                App.SmtpServer = smtpServer;
+                App.SmtpPort = smtpPort.AsInt();
+                App.EnableSsl = smtpSSL;
+                App.UserName = smtpUser;
+                App.Password = smtpPass;
+                App.From = smtpFrom;
+                App.SmtpTo = smtpTo;
+                App.SiteName = siteName;
+                App.SiteAnalytics =  siteAnalytics;
+            }
+            catch (Exception ex)
+            {
+                Message = Helpers.alertDanger(ex.Message.ToString());
+            }
+        }
+    }
+    else
+    {
+        siteName = Settings.GetSetting("siteName");
+        siteAnalytics = Settings.GetSetting("siteAnalytics");
+        smtpServer = Settings.GetSetting("smtpServer");
+        smtpPort = Settings.GetSetting("smtpPort");
+        smtpSSL = Convert.ToBoolean(Settings.GetSetting("smtpSSL"));
+        smtpUser = Settings.GetSetting("smtpUser");
+        smtpPass = Settings.GetSetting("smtpPass");
+        smtpFrom = Settings.GetSetting("smtpFrom");
+        smtpTo = Settings.GetSetting("smtpTo");
+    }
+
+    //populate dropdowns
+    var emailSSL = Functions.emailSSL(smtpSSL);
+}
+@section Scripts{
+<script type='text/javascript'>
+$(window).on('load', function() {
+    $('form').validate({
+        rules: {
+            siteName: {
+                required: true
+            },
+            smtpServer: {
+                required: true
+            },
+            smtpPort: {
+                required: true
+            },
+            smtpUser: {
+                required: true
+            },
+            smtpPwd: {
+                required: true
+            },
+            smtpFrom: {
+                email: true,
+                required: true
+            },
+            smtpTo: {
+                email: true,
+                required: true
+            }
+        },
+        highlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            if(element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+});
+</script>
+}
+@section menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form method="post" action="">
+    <div class="col-lg-12">
+    <h2 class="page-header">Site Setup</h2>
+        <p>Use the fields below to manage the site and email settings.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+        <div class="col-lg-6">
+            <div class="form-group">
+                @Html.Label("Site Name", "siteName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("siteName", @siteName, new { @maxlength = "200", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Name of the site"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Analytics Script", "siteAnalytics", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextArea("siteAnalytics", @siteAnalytics, new { @rows = "12", @cols = "80", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Google Anaytics Tracking Code"></i></span>
+               </div>
+           </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <h2 class="page-header">Email Setup</h2>
+        <div class="col-lg-6">
+            <div class="form-group">
+                @Html.Label("Smtp Server", "smtpServer", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpServer", @smtpServer, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter smtp server eg. mail.yourdomain.com or smtp.gmail.com"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Smtp Port", "smtpPort", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpPort", @smtpPort, new { @maxlength = "5", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter smtp port # eg. 25 or 465 for gmail - please check with your host"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Enable SSL", "smtpSSL", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("smtpSSL", emailSSL, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Select Yes for Gmail"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Smtp User", "smtpUser", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpUser", @smtpUser, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter user eg. you@yourdomain.com"></i></span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                @Html.Label("Smtp Password", "smtpPwd", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpPwd", @smtpPass, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter password"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("E-mail From", "smtpFrom", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpFrom", @smtpFrom, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter e-mail address"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("E-mail To", "smtpTo", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("smtpTo", @smtpTo, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Enter e-mail address"></i></span>
+                </div>
+            </div>
+
+            <p class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Update Settings" />
+            </p>
+        </div>
+    </div>
+</form>

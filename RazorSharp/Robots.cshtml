@@ -1,0 +1,20 @@
+﻿@using System.Text
+@{
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.AppendLine("user-agent: *");
+    sb.AppendLine("disallow: /Account/");
+    sb.AppendLine("disallow: /Admin/");
+    sb.AppendLine("disallow: /Admin/");
+    sb.AppendLine("disallow: /Json/");
+    sb.AppendLine("disallow: /Layouts/");
+    sb.AppendLine("disallow: /Templates/");
+    sb.AppendLine("disallow: /Uploads/");
+    sb.Append("sitemap: " + Request.Url.GetLeftPart(UriPartial.Authority) + "/sitemap.xml");
+
+    Response.ContentType = "text/plain";
+    byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
+    Response.OutputStream.Write(bytes, 0, bytes.Length);
+
+}

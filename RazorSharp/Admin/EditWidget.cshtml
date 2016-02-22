@@ -1,0 +1,188 @@
+﻿@using WebMatrix.Data;
+@{
+    Page.Title = "Admin :: Edit Widget";
+    Page.Heading = "Edit Widget";
+
+    var Id = Request["id"];
+    var Message = string.Empty;
+    dynamic Data = null;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = " Select * From Widgets Where Id=@0";
+        Data = Db.QuerySingle(SqlSelect, Id);
+    }
+    var wName = Data.wName;
+    var wTitle = Data.wTitle;
+    var wText = Data.wText;
+    var wEditDate = Data.wEditDate;
+    var wFile = Data.wFile;
+
+    //List all Layout files
+    var wLayouts = Functions.widgetLayouts(wFile);
+    // list all widget backups
+    var wBackups = Functions.widgetBackups(Id);
+
+    if (IsPost)
+    {
+        if (!Request["btnUpdate"].IsEmpty())
+        {
+            //create backup copy before update
+            using (var Db = Database.Open(Functions.GetDBName()))
+            {
+                var SqlInsert = "Insert INTO Backups (pwId, pwName, pwTitle, pwText, pwFile, pwDate, BType) Values (@0, @1, @2, @3, @4, @5,'w')";
+                Db.Execute(SqlInsert, Id, wName, wTitle, wText, wFile, wEditDate);
+            }
+            //update record
+            wName = Request["wName"];
+            wTitle = Request["wTitle"];
+            wText = Request.Unvalidated("wText");
+            wEditDate = DateTime.Now;
+            wFile = Request["wFile"];
+            try
+            {
+                using (var Db = Database.Open(Functions.GetDBName()))
+                {
+                    var SqlUpdate = "Update Widgets Set wTitle=@0, wText=@1, wEditdate=@2, wFile=@3 Where Id=@4";
+                    Db.Execute(SqlUpdate, wTitle, wText, wEditDate, wFile, Id);
+                    Message = Helpers.alertSuccess("Widget Successfully Saved!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = Helpers.alertDanger(ex.Message.ToString());
+            }
+        }
+        else
+        {
+            //from backup - load current version selected
+            if (Request["Backup"].AsInt() ==0)
+            {
+                Response.Redirect("EditWidget?id=" + Id);
+            }
+            //load from backup - post & btnUpdate is empty
+            dynamic DataFromBackup = null;
+            using (var Db = Database.Open(Functions.GetDBName()))
+            {
+                var SqlSelect = "Select * from Backups where Id=@0";
+                DataFromBackup = Db.QuerySingle(SqlSelect, Request["Backup"]);
+            }
+            wName = DataFromBackup.pwName;
+            wTitle = DataFromBackup.pwTitle;
+            wText = Html.Raw(DataFromBackup.pwText);
+            wEditDate = DataFromBackup.pwDate;
+            wFile = DataFromBackup.pwFile;
+        }
+    }
+    //delete old backups, we want keep only top 5 backups per page/widget
+    int NumberOfBackups = 0;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = "Select Count(*) From Backups Where bType='w' And pwID=@0";
+        NumberOfBackups = (int)Db.QueryValue(SqlSelect, Id);
+    }
+    if (NumberOfBackups > 5)
+    {
+        int TopRecords = NumberOfBackups - 5;
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlDelete = "Delete From Backups Where Id In (Select TOP " + TopRecords + " Id From Backups Where bType='w' And pwID=@0 Order By Id Asc)";
+            Db.Execute(SqlDelete, Id);
+        }
+    }
+}
+@section Scripts{
+<script type='text/javascript'>
+    $(function(){
+        $('#wText').summernote({ height: 400 });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Backup").change(function () {
+            $("#editWidget").submit();
+        });
+    });
+</script>
+<script type='text/javascript'>
+$(window).on('load', function() {
+    $('form').validate({
+        rules: {
+            wFile: {
+                required: true
+            },
+            wTitle: {
+                required: true
+            }
+        },
+        highlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            if(element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+});
+</script>
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form action="" method="post" id="editWidget">
+ <div class="col-lg-12">
+     <h2 class="page-header">Edit Widget | <a href="@Href("~/Admin/AllWidgets")">All Widgets</a> | <a href="@Href("~/Admin/NewWidget")">Create Widget</a> </h2>
+     <p>Edited: @wEditDate</p>
+        <div class="col-lg-6">
+
+            <div class="form-group">
+                @Html.Label("Name", "wName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("wName", @wName, new { @readonly = "readonly", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Name of the widget. This cannot be changed."></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Template", "wFile", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("wFile", wLayouts, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Template used to render widget - it changes the way how the content of this widget is displayed to end user. All templates are located in Templates folder."></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+               @Html.Label("Title", "wTitle", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("wTitle", @wTitle, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Title of widget. Depending on selected template it will or will not be visible to end user."></i></span>
+                </div>
+            </div>
+
+        </div>
+     <div class="col-lg-12">
+         @Html.TextArea("wText", @wText, new { @rows = "15", @cols = "80", @class = "form-control" })
+     </div>
+     <div class="col-lg-6">
+         <div class="form-group">
+             @Html.Label("Widget Backups", "Backup", new { @class = "control-label" })
+             <div class="input-group">
+                 @Html.DropDownList("Backup", wBackups, new { @class = "form-control" })
+                 <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Load content from backup. Every time you update widget/page site will create backup of that widget/page. By default last 5 version of widget/page are stored in Backups table."></i></span>
+             </div>
+         </div>
+         <p class="form-actions">
+             <input class="btn btn-primary" type="submit" name="btnUpdate" value="Update Widget" />
+         </p>
+     </div>
+  </div>
+</form>

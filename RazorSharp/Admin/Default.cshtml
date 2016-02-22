@@ -1,0 +1,227 @@
+﻿@{
+    Page.Title = "Admin :: Dashboard";
+    Page.Heading = "Dashboard";
+    var Message = Helpers.alertInfo("Welcome back " + User.Identity.Name + ". Please note all visitor history is only stored for 30 days. Should you require more detailed data then click <a href='" + @Href("~/Admin/SiteSettings") + "'>here</a> to add you own tracking code.");
+    int pageCount = 0;
+    int widgetCount = 0;
+    int menuCount = 0;
+    int addonCount = 0;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlPageCount = "Select Count(*) From Pages";
+        pageCount = (int)Db.QueryValue(SqlPageCount);
+        var SqlWidgetCount = "Select Count(*) From Widgets";
+        widgetCount = (int)Db.QueryValue(SqlWidgetCount);
+        var SqlMenuCount = "Select Count(*) From Menu";
+        menuCount = (int)Db.QueryValue(SqlMenuCount);
+    }
+    DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
+    addonCount = dirInfo.EnumerateDirectories().Count();
+}
+@section Scripts{
+<!-- Morris Charts JavaScript & CSS -->
+<link href="@StaticFile.Version("~/Styles/morris.css")" rel="stylesheet">
+<script src="@StaticFile.Version("~/Scripts/raphael.min.js")"></script>
+<script src="@StaticFile.Version("~/Scripts/morris.min.js")"></script>
+<script src="@StaticFile.Version("~/Scripts/charts.js")"></script>
+<script>
+    $(document).ready(function () {
+        LoadCharts();
+    });
+</script>
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="glyphicon glyphicon-file gi-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">@Html.Raw(pageCount)</div>
+                        <div>View Pages</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Href("~/Admin/AllPages")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Pages</span>
+                    <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="glyphicon glyphicon-list-alt gi-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">@Html.Raw(widgetCount)</div>
+                        <div>Widgets</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Href("~/Admin/AllWidgets")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Widgets</span>
+                    <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="glyphicon glyphicon-menu-hamburger gi-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">@Html.Raw(menuCount)</div>
+                        <div>Menu Items</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Href("~/Admin/AllMenu")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Menu Items</span>
+                    <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="glyphicon glyphicon-plus-sign gi-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">@Html.Raw(addonCount)</div>
+                        <div>Installed Addons</div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Href("~/Admin/Addons")">
+                <div class="panel-footer">
+                    <span class="pull-left">View Addons</span>
+                    <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="glyphicon glyphicon-stats"></i> Page Views Per Day (Last 30 Days)</h3>
+            </div>
+            <div class="panel-body">
+                <div id="page-views"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="glyphicon glyphicon-stats"></i> Top Browsers</h3>
+            </div>
+            <div class="panel-body">
+                <div id="top-browsers"></div>
+                <div class="text-center">
+                    <a href="#">Total Unique Web Browsers : @Html.Raw(AnalyticsUtility.RecordCount("Browser"))</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="glyphicon glyphicon-stats"></i> Top Pages</h3>
+            </div>
+            <div class="panel-body">
+                <div id="top-pages"></div>
+                <div class="text-center">
+                    <a href="#">Total Unique Pages : @Html.Raw(AnalyticsUtility.RecordCount("Page"))</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="glyphicon glyphicon-stats"></i> Top Operating Systems</h3>
+            </div>
+            <div class="panel-body">
+                <div id="top-os"></div>
+                <div class="text-center">
+                    <a href="#">Total Unique Operating Systems : @Html.Raw(AnalyticsUtility.RecordCount("OperatingSystem"))</a>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+<!-- /.row -->
+
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-resize-horizontal"></i> Referers</h3>
+                </div>
+                <div class="panel-body">
+                    @Html.Raw(AnalyticsUtility.ViewsByReferer())
+                    <div class="text-center">
+                        <a href="#">Total Unique Referers : @Html.Raw(AnalyticsUtility.RecordCount("Referers"))</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-file"></i> Views By Page</h3>
+                </div>
+                <div class="panel-body">
+                    @Html.Raw(AnalyticsUtility.ViewsByPage())
+                    <div class="text-center">
+                        <a href="#">Total Page Visits : @Html.Raw(AnalyticsUtility.RecordCount("Total"))</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-globe"></i> Countries</h3>
+                </div>
+                <div class="panel-body">
+                    @Html.Raw(AnalyticsUtility.ViewsByCountry())
+                    <div class="text-center">
+                        <a href="#">Total Unique Countries : @Html.Raw(AnalyticsUtility.RecordCount("Countries"))</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->

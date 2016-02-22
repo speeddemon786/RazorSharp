@@ -1,0 +1,59 @@
+﻿@using WebMatrix.Data;
+@{
+    Layout = "~/Admin/_Layout.cshtml";
+    Page.Title = "Blog - Install";
+    Page.Heading = "Installing...";
+    var Message = string.Empty;
+
+
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = "Select * From Widgets Where wName = 'blog'";
+        Data = Db.Query(SqlSelect);
+    }
+
+    if (Data.Count() == 0){
+
+        //create Tables
+
+        //    var ct = "CREATE TABLE [Blog] (  [Id] int NOT NULL  IDENTITY (1,1), [smtpServer] nvarchar(100) NULL, [smtpPort] int NULL, [smtpSSL] bit NULL DEFAULT 0, [smtpuser] nvarchar(100) NULL, [smtpPwd] nvarchar(100) NULL, [smtpFrom] nvarchar(100) NULL, [smtpTo] nvarchar(100) NULL, [errName] nvarchar(500) NULL, [errEmail] nvarchar(500) NULL, [errEmail2] nvarchar(500) NULL, [errPhone] nvarchar(500) NULL, [errRequest] nvarchar(500) NULL, [thankYou] nvarchar(500) NULL, [mailSubject] nvarchar(100) NULL)";
+        //    var at = "ALTER TABLE [Blog] ADD CONSTRAINT [PK_Blog] PRIMARY KEY ([Id])";
+
+        //    db.Execute(ct);
+        //    db.Execute(at);
+
+        //    ct = "CREATE UNIQUE INDEX [UQ__Blog__0000000000000027] ON [Blog] ([Id] ASC)";
+        //    at = "Insert into Blog (smtpServer, smtpPort, smtpSSL, smtpUser, smtpPwd, smtpFrom, smtpTo, errName, errEmail, errEmail2, errPhone, errRequest, thankYou, mailSubject ) "
+        //        + "values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)";
+        //    db.Execute(ct);
+        //    db.Execute(at,"mail.yourdomain.com", 25, false, "you@yourdomain.com", "secret", "you@yourdomain.com", "you@yourdomain.com", "Enter Name", "Enter E-mail", "Enter valid E-mail", "Enter Phone", "Enter Question", "Thank You, e-mail sent. Someone will contact you within 24h", "E-mail from website");
+
+        //    //insert widget
+        var wName = "Blog";
+        var wFile = "addon_Blog.cshtml";
+        var wTitle = "Blog - Do Not Modify";
+        var wText = "To change this widget please go to Addons";
+        var wEditDate = DateTime.Now;
+
+
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
+            Db.Execute(SqlInsert, wName, wTitle, wText, wEditDate, wFile);
+        }
+        Response.Redirect(Request.UrlReferrer.ToString());
+    }
+    else
+    {
+        Message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
+    }
+
+}
+@section Scripts {
+
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(Message)

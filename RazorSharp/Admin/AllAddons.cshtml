@@ -1,0 +1,111 @@
+﻿@{
+    Page.Title = "Admin :: All Addons";
+    Page.Heading = "All Addons";
+    var Message = string.Empty;
+
+    DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
+    DirectoryInfo[] listAddons = dirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly);
+    var Addon = Request["addon"];
+    if (!Addon.IsEmpty())
+    {
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            // Get Widget ID
+            var SqlSelect = "Select id From Widgets Where wName=@0";
+            var wId = Db.QueryValue(SqlSelect, Addon);
+            if (string.IsNullOrEmpty(wId))
+            {
+                wId = "0";
+            }
+            // Delete Widget
+            var SqlDelete = "Delete From Widgets Where Id=@0";
+            Db.Execute(SqlDelete, wId);
+            // Delete Addon Files
+            var AddonPath = Server.MapPath("~/Addons/" + Addon);
+            if (Directory.Exists(AddonPath))
+            {
+                DirectoryInfo DirAddon = new DirectoryInfo(AddonPath);
+                Functions.emptyDirectory(DirAddon);
+                Directory.Delete(AddonPath, true);
+            }
+            Response.Redirect("~/Admin/Addons?messageId=1");
+        }
+    }
+    var Download = Request["download"];
+    if (!Download.IsEmpty())
+    {
+        var compressPath = Server.MapPath("~/Addons/" + Download +"/");
+        var outputPath = Server.MapPath("~/Uploads/" + Download + ".zip");
+        Compression.Compress(compressPath, outputPath);
+        Response.ContentType = "application/zip";
+        Response.AppendHeader("Content-Disposition", "attachment; filename=" + Download + ".zip");
+        Response.TransmitFile(outputPath);
+        Response.Flush();
+        File.Delete(outputPath);
+        Response.End();
+    }
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("Addon Successfully Deleted!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+}
+@section Scripts {
+
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(@Message)
+<div class="col-lg-12">
+    <h2 class="page-header">All Addons | <a href="@Href("~/Admin/NewAddon")">Upload Addon</a></h2>
+    <p>Below are a list of all the current active addons. Deleting an addon will remove all its files, settings and any pages it may be added to.</p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <a href="#">Manage</a>
+                    </th>
+                    <th scope="col">
+                        <a href="#">Addon</a>
+                    </th>
+                    <th scope="col">
+                        <a href="#">Download</a>
+                    </th>
+                    <th scope="col">
+                        <a href="#">Delete</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (listAddons.Count() > 0)
+                {
+                    foreach (var d in listAddons)
+                    {
+                        <tr>
+                            <td><a href="@Href("~/Admin/ManageAddon?addon=" + @d.Name)"><i class="glyphicon glyphicon-edit"></i></a></td>
+                            <td>@Functions.addonsMenu(d.Name)</td>
+                            <td><a href="@Href("~/Admin/Addons?download=" + @d.Name)"><i class="glyphicon glyphicon-download"></i></a></td>
+                            <td><a href="@Href("~/Admin/Addons?addon=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td><a href="#">No Addons Found</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

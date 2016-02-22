@@ -1,0 +1,22 @@
+﻿@{
+    Page.Title = "Manage Addon";
+    Page.Heading = "Manage Addon";
+    var Message = string.Empty;
+    var Addon = Request["addon"];
+    var AddonPath = "~/Addons/" + Addon + "/Default.cshtml";
+    var MappedPath = Server.MapPath(AddonPath);
+}
+@section Scripts{
+    
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@if (!File.Exists(MappedPath))
+{
+    @Html.Raw(Helpers.alertWarning("Invalid Addon!"));
+}
+else
+{
+    @RenderPage(AddonPath);
+}

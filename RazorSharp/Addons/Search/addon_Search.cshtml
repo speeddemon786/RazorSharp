@@ -1,0 +1,17 @@
+﻿@{
+    
+}
+<form action="@Href("~/Results")" method="get">
+    <div class="well">
+        <h4>@PageData[0].wTitle</h4>
+        <div class="input-group">
+            <input type="text" class="form-control" id="q" name="q">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </span>
+        </div>
+        <!-- /.input-group -->
+    </div>
+</form>

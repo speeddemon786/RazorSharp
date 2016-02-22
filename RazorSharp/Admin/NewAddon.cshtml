@@ -1,0 +1,68 @@
+﻿@using WebMatrix.Data;
+@{
+    Page.Title = "Admin :: Upload Addon";
+    Page.Heading = "Upload Addon";
+
+    var Message = string.Empty;
+
+    if (IsPost)
+    {
+        var uploadedFile = Request.Files["fileAddon"];
+        if (uploadedFile.ContentLength > 0)
+        {
+            var fileName = Path.GetFileName(Request.Files["fileAddon"].FileName);
+            var fileSavePath = Server.MapPath("~/Uploads/" + fileName);
+            var extractPath = Server.MapPath("~/Addons/");
+            uploadedFile.SaveAs(fileSavePath);
+            Compression.Decompress(fileSavePath, extractPath);
+            File.Delete(fileSavePath);
+            Response.Redirect("~/Admin/Addons?messageId=1");
+        }
+        else
+        {
+            Message = Helpers.alertWarning("Please Select An Addon To Upload");
+        }
+    }
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("Addon Successfully Uploaded, You May Need To Click 'Manage Addon' To Complete The Install!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+}
+@section Scripts{
+
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form method="post" enctype="multipart/form-data">
+    <div class="col-lg-12">
+        <h2 class="page-header"><a href="@Href("~/Admin/AllAddons")">All Addons</a> | Upload Addon</h2>
+        <p>Use the upload option below to upload a new addon to the site. The file must be in a valid zip archive. You may need to browse to the selected addon afterwards to complete the installation.</p>
+        <div class="col-lg-6">
+            @Html.Label("Addon Zip File", "fileAddon", new { @class = "control-label" })
+            <div class="input-group input-file">
+                <div class="form-control"></div>
+                <span class="input-group-addon">
+                    <a class='btn btn-primary' href='javascript:;'>
+                        Browse
+                        @Html.TextBox("fileAddon", "", new { type = "file", accept = "application/zip", @class = "file", @onchange = "$(this).parent().parent().parent().find('.form-control').html($(this).val());" })
+                    </a>
+                </span>
+            </div>
+            <p>&nbsp;</p>
+            <p class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Upload Addon" />
+            </p>
+        </div>
+     </div>
+</form>

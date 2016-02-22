@@ -1,0 +1,62 @@
+﻿@{
+    var Message = string.Empty;
+    var Code = Request.QueryString["Error"];
+
+    switch (Code)
+    {
+        case "BadRequest":
+            Message = "An invalid requested was received!";
+            break;
+        case "Unauthorized":
+            Message = "You are not authorized to view this page!";
+            break;
+        case "Forbidden":
+            Message = "You do not have permission to access the requested resource";
+            break;
+        case "NotFound":
+            Message = "Page or resource not found!";
+            break;
+        case "InternalServerError":
+            Message = "An internal server error occured!";
+            break;
+        default:
+            Message = "An unhandled error occured!";
+            break;
+    }
+}
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Error</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="@Href("~/Styles/bootstrap.min.css")" rel="stylesheet">
+    <link href="@Href("~/Styles/error.css")" rel="stylesheet">
+    <script src="@Href("~/Scripts/jquery.min.js")"></script>
+    <script src="@Href("~/Scripts/bootstrap.min.js")"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-template">
+                    <h1 class="grey">
+                        Oops!
+                    </h1>
+                    <h2 class="grey">
+                        @Message
+                    </h2>
+                    <div class="error-details grey">
+                        Sorry, an error has occured and an administrator has been notified!
+                    </div>
+                    <div class="error-actions">
+                        <a href="@Href("~/")" class="btn btn-primary btn-lg">
+                            <span class="glyphicon glyphicon-home"></span>
+                            Take Me Home
+                        </a><a href="mailto:grant@speeddemon.co.za" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

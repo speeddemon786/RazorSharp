@@ -1,0 +1,133 @@
+﻿@{
+    var isActive = true;
+    var Message = string.Empty;
+    Validation.RequireField("Name");
+    Validation.RequireField("Email");
+    Validation.RequireField("Phone");
+    Validation.RequireField("Enquiry");
+    Validation.Add("Email", Validator.Regex(@"\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"));
+
+    if (IsPost)
+    {
+        var Name = Request.Form["Name"];
+        var Email = Request.Form["Email"];
+        var Phone = Request.Form["Phone"];
+        var Enquiry = Request.Form["Enquiry"];
+
+        if (Validation.IsValid())
+        {
+            var mailBody = "";
+            foreach (var item in Request.Form)
+            {
+                mailBody += item.ToString() + " : " + Request[item.ToString()] + "<br />";
+            }
+            try
+            {
+                // Initialize WebMail helper
+                WebMail.SmtpServer = App.SmtpServer;
+                WebMail.SmtpPort = App.SmtpPort;
+                WebMail.EnableSsl = App.EnableSsl;
+                WebMail.UserName = App.UserName;
+                WebMail.Password = App.Password;
+                WebMail.From = App.From;
+
+                // Send email
+                WebMail.Send(to: App.SmtpTo, subject: "E-mail from website : " + App.SiteName, body: mailBody);
+                Message = Helpers.alertSuccess("Message Successfully Sent!");
+                isActive = false;
+            }
+            catch (Exception ex)
+            {
+                Message = Helpers.alertDanger(ex.Message.ToString());
+            }
+        }
+        else
+        {
+            Message = Helpers.alertWarning("Please Complete All Required Fields!");
+        }
+    }
+}
+<form method="post" action="" role="form" id="contactform">
+    <div class="col-lg-8">
+        <h3>Contact Form</h3>
+        @Html.Raw(Message)
+        <div class="form-group">
+            @Html.Label("Your Name", "Name", new { @class = "control-label" })
+            <div class="controls">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user" title="Your Name"></i></span>
+                    @Html.TextBox("Name", Request["Name"], new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Your Email", "Email", new { @class = "control-label" })
+            <div class="controls">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-envelope" title="Your Email Address"></i></span>
+                    @Html.TextBox("Email", Request["Email"], new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Your Phone", "Phone", new { @class = "control-label" })
+            <div class="controls">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-phone" title="Your Phone Number"></i></span>
+                    @Html.TextBox("Phone", Request["Phone"], new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group ">
+            @Html.Label("Enquiry", "Enquiry", new { @class = "control-label" })
+            <div class="controls">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-pencil" title="Your Enquiry"></i></span>
+                    @Html.TextArea("Enquiry", Request["Enquiry"], new { @class = "form-control", rows = 4, cols = 78 })
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <input type="submit" value="Submit Enquiry" @(!isActive ? "disabled=disabled" : "") class="btn btn-primary" />
+        </div>
+        <p>&nbsp;</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
+    <script type='text/javascript'>
+        $(window).on('load', function() {
+            $('#contactform').validate({
+                rules: {
+                    Name: {
+                        required: true
+                    },
+                    Email: {
+                        required: true,
+                        email: true
+                    },
+                    Phone: {
+                        required: true
+                    },
+                    Enquiry: {
+                        required: true
+                    }
+                },
+                highlight: function(element) {
+                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                },
+                unhighlight: function(element) {
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                },
+                errorElement: 'span',
+                errorClass: 'help-block',
+                errorPlacement: function(error, element) {
+                    if(element.parent('.input-group').length) {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+
+        });
+    </script>
+</form>

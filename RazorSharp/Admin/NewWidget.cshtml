@@ -1,0 +1,101 @@
+﻿@using WebMatrix.Data;
+@{
+    Page.Title = "Admin :: Create Widget";
+    Page.Heading = "Create Widget";
+    var wName = "";
+    var wTitle = "Title Here";
+    var wText = "Text here";
+    var wEditDate = DateTime.Now;
+    var wFile = "";
+    var Message = string.Empty;
+
+    //populate dropdowns
+    var wLayouts = Functions.widgetLayouts(wFile);
+
+    Validation.RequireField("wName");
+    Validation.RequireField("wFile");
+
+    wName = Request["wName"];
+    wFile = Request["wFile"];
+
+    if (IsPost && Validation.IsValid())
+    {
+        //clean wName
+        var wNameSQL = wName.ToString().Trim().Replace(" ","-");
+        wNameSQL = wNameSQL.Replace("'", "").ToLower();
+        try
+        {
+            using (var Db = Database.Open(Functions.GetDBName()))
+            {
+                var SqlInsert = "Insert Into Widgets (wName, wTitle, wText, wEditDate, wFile) Values (@0, @1, @2, @3, @4)";
+                Db.Execute(SqlInsert, wNameSQL, wTitle, wText, wEditDate, wFile);
+                Response.Redirect("EditWidget?id=" + Db.GetLastInsertId());
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = Helpers.alertDanger(ex.Message.ToString());
+        }
+    }
+}
+@section Scripts{
+<script type='text/javascript'>
+$(window).on('load', function() {
+    $('form').validate({
+        rules: {
+            wName: {
+                required: true
+            },
+            wFile: {
+                required: true
+            }
+        },
+        highlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            if(element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+});
+</script>
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form method="post" action="">
+ <div class="col-lg-12">
+        <h2 class="page-header"><a href="@Href("~/Admin/AllWidgets")">All Widgets</a> | Create Widget</h2>
+     <p>Use the form below to add a widget to an exisitng page on the site. You can add widgets to as many areas as what your theme allows.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+        <div class="col-lg-6">
+            <div class="form-group">
+                @Html.Label("Name", "wName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("wName", Request["wName"], new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Name of the new widget. Recommended names are in format section_name-widget_name ex.: left-quick-contact or right-ads-all-pages , this way when you will be adding widgets to sections in your page you will know which widget was designed to fit in selected section"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Template", "wFile", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("wFile", wLayouts, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Template that will be used to render the widget. All are located in Templates, so you can create new/change them to fit your needs"></i></span>
+                </div>
+            </div>
+            <p class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Create Widget" />
+            </p>
+        </div>
+  </div>
+</form>

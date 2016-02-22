@@ -1,0 +1,11 @@
+﻿@{
+    if (User.Identity.IsAuthenticated)
+    {
+        Layout = "~/Admin/_Layout.cshtml";
+    }
+    else
+    {
+        var returnUrl = "~/Account/Login?ReturnUrl=" + Request.Url.PathAndQuery;
+        Response.Redirect(returnUrl);
+    }
+}

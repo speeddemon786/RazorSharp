@@ -1,0 +1,108 @@
+﻿@using WebMatrix.Data;
+@{
+    //check what page is requested and load data from database
+    var pageName = Context.GetRouteValue("PageName");
+    if (pageName == null)
+    {
+        pageName = "Default";
+    }
+
+    dynamic Data = null;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var Sqlselect = "SELECT pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pBody, pBodyFile FROM Pages WHERE pName = @0 and pHTML=1";
+        Data = Db.QuerySingle(Sqlselect, pageName);
+    }
+    if (Data == null)
+    {
+        throw new HttpException(404, "Not found");
+    }
+    else
+    {
+        AnalyticsUtility.SaveVisitorInfo();
+    }
+
+    //set layout for requested page
+    Layout = "~/Layouts/"+ Data.pMasterpage;
+
+    //set meta tags for requested page
+    Page.mTitle = Data.mTitle;
+    Page.mKeywords = Data.mKeywords;
+    Page.mDescription = Data.mDescription;
+
+    if (Data.pBodyFile.StartsWith("addon_") && !Context.GetRouteValue("Par1").IsEmpty())
+    {
+        //load tags based on urldata[0]
+        dynamic Data1 = null;
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var Sqlselect = "SELECT mTitle, mDescription, mKeywords FROM Pages WHERE pName = @0 and pHTML=0";
+            Data1 = Db.QuerySingle(Sqlselect, Context.GetRouteValue("Par1"));
+        }
+        if (Data1 != null)
+        {
+            Page.mTitle = Data1.mTitle;
+            Page.mKeywords = Data1.mKeywords;
+            Page.mDescription = Data1.mDescription;
+        }
+    }
+    dynamic Widgets = null;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        //this will select all widgets for selected page. widgets will be loaded to sections on layout page
+        var Sqlselect = "Select PageWidget.pId, PageWidget.sName, PageWidget.wId, Widgets.wTitle, Widgets.wText, Widgets.wFile, Widgets.wName From PageWidget Inner Join Widgets On PageWidget.wId = Widgets.Id Where PageWidget.pId=@0 Order By sName, PageWidget.wOrderId Desc";
+        //query based on ID of already selected page data.pID
+        Widgets = Db.Query(Sqlselect, Data.pId);
+    }
+
+}
+
+@*render body*@
+@if (Data.pBody){
+    //standard body : _Name.cshtml
+    if (Data.pBodyFile.StartsWith("_")){
+      @RenderPage("~/Templates/Body/" + Data.pBodyFile, Data);
+    }
+    else
+    { //Addons : addon_ADDONNAME_something.cshtml
+        var addon = Data.pBodyFile.ToString().Replace("addon_", "");
+        addon = addon.Remove(addon.IndexOf("_"));
+        @RenderPage("~/Addons/" + addon + "/Body/" + Data.pBodyFile, Data);
+    }
+}
+
+@*render sections: You can create as many as you need in your layout pages*@
+@{
+    var sn = "";
+    foreach (var widget in Widgets) {
+
+        var sectionName = (string)widget.sName;
+        var wFile = (string)widget.wFile;
+        if(sn!=sectionName)
+        {
+
+            DefineSection(sectionName, () => {
+                foreach (var row in Widgets)
+                {
+                    if (row.sName == sectionName) {
+                        //standard widget : _name.cshtml
+                        if (row.wFile.StartsWith("_"))
+                        {
+                            Write(RenderPage("~/Templates/" + row.wFile , row));
+                        }
+                        else
+                        { //Addons : addon_name.cshtml
+                            var addon = row.wFile.ToString().Replace("addon_", "");
+                            addon = addon.Replace(".cshtml", "");
+                            Write(RenderPage("~/Addons/" + addon +"/" + row.wFile, row));
+                        }
+                    }
+                }
+
+            });
+
+        }
+        sn = sectionName;
+
+    }
+}

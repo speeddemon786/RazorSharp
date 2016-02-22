@@ -1,0 +1,40 @@
+﻿@using WebMatrix.Data;
+@{
+    var Message = string.Empty;
+
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = "Select * From Widgets Where wName = 'contact-form'";
+        Data = Db.Query(SqlSelect);
+    }
+    if (Data.Count() == 0)
+    {
+        Response.Redirect("~/Addon/ContactForm/Install");
+    }
+    //show success messages
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("Contact form successfully installed!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+}
+@Html.Raw(Message)
+<form method="post" action="">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header">Contact Form Settings</h2>
+            <p>The contact form addon has no customizable options.</p>
+            <p>To use, simply go to <a href="@Href("~/Admin/AllPages")">pages</a> and add to the page you require.</p>
+            <p>The form will use the <a href="@Href("~/Admin/SiteSettings")">email settings</a> built into the website.</p>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,126 @@
+﻿@using WebMatrix.Data;
+@{
+    Validation.RequireField("Username");
+    Validation.RequireField("Password");
+    var Message = string.Empty;
+    if (IsPost)
+    {
+        AntiForgery.Validate();
+        if (Validation.IsValid())
+        {
+            var Username = Request["Username"];
+            var Password = Request["Password"];
+            dynamic Data = null;
+            using (var Db = Database.Open(Functions.GetDBName()))
+            {
+                var SqlSelect = "Select Id From Users Where Username=@0 And Password=@1";
+                Data = Db.QuerySingle(SqlSelect, Username, Encryption.Encrypt(Password));
+            }
+            if (Data != null)
+            {
+                FormsAuthentication.SetAuthCookie(Username, true);
+                if (Request.QueryString["ReturnUrl"] != null)
+                {
+                    Response.Redirect(Request.QueryString["ReturnUrl"]);
+                }
+                else
+                {
+                    Response.Redirect("~/Admin/");
+                }
+            }
+            else
+            {
+                Message = Helpers.alertDanger("Invalid Login!");
+            }
+        }
+        else
+        {
+            Message = Helpers.alertWarning("Please Complete All Required Fields!");
+        }
+    }
+    if (Request["Action"] != null && Request["Action"] == "Logout")
+    {
+        FormsAuthentication.SignOut();
+        Response.Redirect("~/Account/Login");
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@App.SiteName - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="@StaticFile.Version("~/Styles/bootstrap.min.css")" />
+    <link rel="stylesheet" type="text/css" href="@StaticFile.Version("~/Styles/login.css")" />
+    <script type="text/javascript" src="@StaticFile.Version("~/Scripts/jquery.min.js")"></script>
+    <script type="text/javascript" src="@StaticFile.Version("~/Scripts/jquery.validate.min.js")"></script>
+    <script type="text/javascript" src="@StaticFile.Version("~/Scripts/bootstrap.min.js")"></script>
+    <script type='text/javascript'>
+        $(window).on('load', function () {
+            $('form').validate({
+                rules: {
+                    Username: {
+                        required: true
+                    },
+                    Password: {
+                        required: true
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                },
+                unhighlight: function (element) {
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                },
+                errorElement: 'span',
+                errorClass: 'help-block',
+                errorPlacement: function (error, element) {
+                    if (element.parent('.input-group').length) {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <h1 class="grey">Login</h1>
+            </div>
+            <!-- Admin Login - START -->
+            <form class="col-md-4 col-md-offset-4" method="post" action="">
+                @AntiForgery.GetHtml()
+                @Html.Raw(Message)
+                <div class="form-group">
+                    @Html.Label("Username", "Username", new { @class = "control-label grey" })
+                    <div class="controls">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            @Html.TextBox("Username", Request["Username"], new { @maxlength = "50", @class = "form-control input-lg" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.Label("Password", "Password", new { @class = "control-label grey" })
+                    <div class="controls">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            @Html.TextBox("Password", Request["Password"], new { @type = "password", @class = "form-control input-lg" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Sign In" class="btn btn-primary btn-lg btn-block" />
+                    <span><a href="#">Need help?</a></span>
+                    <span class="pull-right"><a href="@Href("~/")">Back To Site</a></span>
+                </div>
+            </form>
+            <!-- Admin Login - END -->
+        </div>
+    </div>
+</body>
+</html>

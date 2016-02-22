@@ -1,0 +1,153 @@
+﻿@using WebMatrix.Data;
+@{
+    var pageId = Request["pId"];
+    var pageName = Request["pName"];
+
+    Page.Title = "Widgets On Page: " + pageName;
+    Page.Heading = "Widgets On Page: " + pageName;
+
+    var Message = string.Empty;
+    var disableButton = false;
+    var wId = Request["wId"];
+    var sName = Request["sName"];
+    var wOrderId = Request["wOrderId"];
+
+    //show success messages
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("Widget successeffully removed from page!");
+                break;
+            case "2":
+                Message = Helpers.alertSuccess("Widget successfully added to page!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+
+    //delete record
+    var deleteID = Request["deleteId"];
+    if (!deleteID.IsEmpty())
+    {
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlDelete = "Delete From PageWidget Where Id=@0";
+            Db.Execute(SqlDelete, deleteID);
+            Response.Redirect("~/Admin/WidgetsOnPage?pId=" + pageId + "&pName=" + pageName + "&messageId=1");
+        }
+    }
+
+    Validation.RequireField("wOrderId","Please Enter Order ID");
+    Validation.Add("wOrderId",Validator.Integer("Order Id Must Be An Integer"));
+
+    if (IsPost && Validation.IsValid())
+    {
+        if (pageId.IsEmpty())
+        {
+            Message = Helpers.alertDanger("The PageID Is Missing!");
+        }
+        if (wId.IsEmpty())
+        {
+            Message = Helpers.alertWarning("Please Create Some <a href=\"NewWidget\">Widgets First!</a>");
+            disableButton = true;
+        }
+        //no errors = insert record
+        if (Message.IsEmpty())
+        {
+            try
+            {
+                using (var Db = Database.Open(Functions.GetDBName()))
+                {
+                    var SqlInsert = "Insert Into PageWidget (wId, sName, wOrderId, pId) Values (@0, @1, @2, @3)";
+                    Db.Execute(SqlInsert, wId, sName, wOrderId, pageId);
+                    Response.Redirect("WidgetsOnPage?pId=" + pageId + "&pName=" + pageName + "&messageId=2");
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = Helpers.alertDanger(ex.Message.ToString());
+            }
+        }
+    }
+    dynamic Data = null;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = "Select PageWidget.*, Widgets.wName, Widgets.wFile From PageWidget Inner Join Widgets On PageWidget.wId = Widgets.ID Where pId= @0 Order By sName ASC, wOrderId DESC";
+        Data = Db.Query(SqlSelect, pageId);
+    }
+    var Grid = new WebGrid(source: Data, rowsPerPage: 10);
+    //select widget zones
+    var wZones = Functions.widgetZones(pageId, sName);
+    //select widgets
+    var widgets = Functions.availableWidgets(wId);
+}
+@section Scripts{
+
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form action="" method="post">
+    <div class="col-lg-12">
+        <h2 class="page-header">Insert | <a href="@Href("~/Admin/EditPage?id=" + pageId)">Edit Page</a></h2>
+        <p>Use the form below to add widgets to the selected page.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+        <div class="col-lg-6">
+            <div class="form-group">
+                @Html.Label("Section Name", "sName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("sName", wZones, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Select section of the page where you want to insert the widget"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Widget", "wId", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("wId", widgets, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Select widget that will be inserted to selected section of the page"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Order ID", "wOrderId", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("wOrderId", @wOrderId, new { @class = "form-control", @maxlength = "5" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Higher the number , higher the position of the widget on page"></i></span>
+                </div>
+            </div>
+
+            <p class="form-actions">
+                <input type="submit" value="Insert Widget"  @if (disableButton == true) { <text> disabled="disabled" </text> } class="btn btn-primary" />
+            </p>
+            
+      </div>
+</div>
+</form>
+<div class="col-lg-12">
+    <h2 class="page-header">Available</h2>
+    <div class="table-responsive">
+        @Grid.GetHtml(
+            tableStyle: "table table-bordered table-hover table-striped",
+            columns: Grid.Columns(
+                        Grid.Column("Edit", format:@<text>@Html.Raw(Helpers.EditWidgetImg(item.wId, item.wFile))</text>),
+                        Grid.Column("wName", "Name"),
+                        Grid.Column("Section", format: @<span>@item.sName.ToString().Replace("rc", "")</span>),
+                        Grid.Column("Order", format: @<span>
+                    <a href="@Href("~/Admin/ChangeOrderId?tn=pagewidget&cv=1&id=" + item.Id)" title="Up">
+                        <i class="glyphicon glyphicon-arrow-up"></i>
+                    </a><a href="@Href("~/Admin/ChangeOrderId?tn=pagewidget&cv=-1&id=" + item.Id)" title="Down"><i class="glyphicon glyphicon-arrow-down" style="margin-right:10px"></i></a>@item.wOrderId
+                </span>),
+                        Grid.Column("Delete", format:@<text>@Html.Raw(Helpers.DeleteWidgetInPage(Convert.ToInt32(pageId), pageName, item.Id, item.wFile))</text>)
+                                )
+                )
+        <div class="col-sm-6">
+            @Grid.PagerList(mode: WebGridPagerModes.All, paginationStyle: "pagination pagination-small pagination-right")
+        </div>
+   </div>
+</div>

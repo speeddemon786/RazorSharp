@@ -1,0 +1,67 @@
+﻿@using WebMatrix.Data;
+@{
+    Page.Title = "Admin :: All Pages";
+    Page.Heading = "All Pages";
+    var Message = string.Empty;
+
+    //delete record
+    var DeleteID = Request["id"];
+    if (!DeleteID.IsEmpty())
+    {
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlDelete = "Delete From Pages Where pId=@0";
+            Db.Execute(SqlDelete, DeleteID);
+            Response.Redirect("~/Admin/AllPages?messageId=1");
+        }
+    }
+    //show success messages
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("Page successeffully deleted!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+
+        var SqlSelect = "Select pId, pName, pEditDate From Pages Where pHTML=1 Order By pEditDate Desc";
+        Data = Db.Query(SqlSelect);
+    }
+    var Grid = new WebGrid(source: Data, rowsPerPage: 10);
+
+}
+@section Scripts {
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<div class="col-lg-12">
+    <h2 class="page-header">All Pages | <a href="@Href("~/Admin/NewPage")">Create Page</a></h2>
+    <p>Below are a list of all the current pages on the site. Click <a href="@Href("~/Admin/AllMenu")">HERE</a> to confirm if these pages are linked to the menu.</p>
+    <div class="table-responsive">
+        @Grid.GetHtml(
+                tableStyle: "table table-bordered table-hover table-striped",
+                columns: Grid.Columns(
+                    Grid.Column("Edit", header: "Edit Page", format: @<a href="@Href("~/Admin/EditPage?id=" + item.pId)" title="Edit Page"><i class="glyphicon glyphicon-edit"></i></a>),
+                    Grid.Column("Widgets", format: @<a href="@Href("~/Admin/WidgetsOnPage?pid=" + item.pId + "&pName=" + item.pName)" title="Widgets"><i class="glyphicon glyphicon-list-alt"></i></a>),
+                    Grid.Column("pName", "Page Name"),
+                    Grid.Column("Last Edited", format: @<i>@item.pEditDate</i>),
+                    Grid.Column("Delete", format: @<a href="@Href("~/Admin/AllPages?id=" + item.pId)" title="Delete" onclick="return confirm('Are You Sure You Want To Delete This Page?')"><i class="glyphicon glyphicon-remove"></i></a>)
+                )
+        )
+        <div class="col-sm-6">
+            @Grid.PagerList(mode: WebGridPagerModes.All, paginationStyle: "pagination pagination-small pagination-right")
+        </div>
+    </div>
+</div>
+

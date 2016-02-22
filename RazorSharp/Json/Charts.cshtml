@@ -1,0 +1,23 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    string chartName = Request["chart"];
+    var JsonString = string.Empty;
+
+    AnalyticsUtility analytics = new AnalyticsUtility();
+
+    if (!string.IsNullOrEmpty(chartName))
+    {
+        ChartDataList chartList = new ChartDataList();
+        chartList = analytics.GetChartData(chartName);
+
+        var jsonSerializer = new JavaScriptSerializer();
+        string data = jsonSerializer.Serialize(chartList.ListOfChartData);
+        JsonString = data;
+    }
+    else
+    {
+        JsonString = null;
+    }
+
+}
+@Html.Raw(JsonString)

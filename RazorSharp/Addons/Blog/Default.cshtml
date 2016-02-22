@@ -1,0 +1,31 @@
+﻿@using WebMatrix.Data;
+@{
+    var Message = string.Empty;
+
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    var SqlSelect = string.Empty;
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        SqlSelect = "Select * From Widgets Where wName = 'blog'";
+        Data = Db.Query(SqlSelect);
+    }
+    if (Data.Count() == 0)
+    {
+        Response.Redirect("~/Admin/Blog/Install");
+    }
+}
+@section Scripts {
+
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(Message)
+<form method="post" action="">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header">Blog Settings</h2>
+            <p>Under construction...</p>
+        </div>
+    </div>
+</form>

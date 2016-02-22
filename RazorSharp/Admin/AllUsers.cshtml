@@ -1,0 +1,68 @@
+﻿@using WebMatrix.Data;
+@{
+    Page.Title = "Admin :: All User";
+    Page.Heading = "All Users";
+    var Message = string.Empty;
+
+    //delete record
+    var DeleteID = Request["id"];
+    if (!DeleteID.IsEmpty())
+    {
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlDelete = "Delete From Users Where Id=@0";
+            Db.Execute(SqlDelete, DeleteID);
+            Response.Redirect("~/Admin/AllUsers?messageId=1");
+        }
+    }
+    //show success messages
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                Message = Helpers.alertSuccess("User successeffully deleted!");
+                break;
+            default:
+                Message = Helpers.alertWarning("Unknown messageId");
+                break;
+        }
+    }
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+
+        var SqlSelect = "Select id, DisplayName, Email, IsActive, DateCreated From Users Order By DisplayName Desc";
+        Data = Db.Query(SqlSelect);
+    }
+    var Grid = new WebGrid(source: Data, rowsPerPage: 10);
+
+}
+@section Scripts {
+}
+@section Menu{
+    @RenderPage("_Menu.cshtml")
+}
+@Html.Raw(Message)
+<div class="col-lg-12">
+    <h2 class="page-header">All Users | <a href="@Href("~/Admin/NewUser")">Create User</a></h2>
+    <p>Below are a list of all the current users on the site. Only users maked as active will be permitted to login to the site.</p>
+    <div class="table-responsive">
+        @Grid.GetHtml(
+             tableStyle: "table table-bordered table-hover table-striped",
+             columns: Grid.Columns(
+                 Grid.Column("Edit", header: "Edit User", format: @<a href="@Href("~/Admin/EditUser?id=" + item.Id)" title="Edit User"><i class="glyphicon glyphicon-edit"></i></a>),
+                 Grid.Column("DisplayName", "Display Name"),
+                 Grid.Column("Email", "Email"),
+                 Grid.Column("IsActive", header: "Is Active", format: (item) => Html.CheckBox("chkActive", (bool)item.IsActive, new { disabled = "disabled" })),
+                 Grid.Column("DateCreated", header: "Created", format: @<i>@item.DateCreated.ToShortDateString()</i>),
+                 Grid.Column("Delete", format: @<a href="@Href("~/Admin/AllUsers?id=" + item.Id)" title="Delete" onclick="return confirm('Are You Sure You Want To Delete This User?')"><i class="glyphicon glyphicon-remove"></i></a>)
+                )
+        )
+        <div class="col-sm-6">
+            @Grid.PagerList(mode: WebGridPagerModes.All, paginationStyle: "pagination pagination-small pagination-right")
+        </div>
+    </div>
+</div>
+

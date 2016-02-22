@@ -1,0 +1,20 @@
+﻿@using System.Xml.Linq;
+@{
+    var urls = Functions.menuItems();
+    XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    var baseurl = Request.Url.GetLeftPart(UriPartial.Authority) + "/{0}";
+    var sitemap = new XDocument(
+        new XDeclaration("1.0", "utf-8", "yes"),
+            new XElement(ns + "urlset",
+                from url in urls select
+                    new XElement("url",
+                    new XElement("loc", string.Format(baseurl, url)),
+                    new XElement("lastmod", String.Format("{0:yyyy-MM-dd}", DateTime.Now)),
+                    new XElement("changefreq", "monthly"),
+                    new XElement("priority", "0.5")
+                    )
+                )
+            );
+    Response.ContentType = "text/xml";
+    sitemap.Save(Response.Output);
+}

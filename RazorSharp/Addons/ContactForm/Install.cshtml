@@ -1,0 +1,45 @@
+﻿@using WebMatrix.Data;
+@{
+    Layout = "~/Admin/_Layout.cshtml";
+    Page.Title = "Contact Form - Install";
+    Page.Heading = "Installing...";
+    var Message = string.Empty;
+
+
+    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
+    using (var Db = Database.Open(Functions.GetDBName()))
+    {
+        var SqlSelect = "Select * From Widgets Where wName = 'contact-form'";
+        Data = Db.Query(SqlSelect);
+    }
+
+    if (Data.Count() == 0){
+
+        //insert widget
+        var wName = "contact-form";
+        var wFile = "addon_ContactForm.cshtml";
+        var wTitle = "Contact Form - Do Not Modify";
+        var wText = "To change this widget please go to Addons";
+        var wEditDate = DateTime.Now;
+
+
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
+            Db.Execute(SqlInsert, wName, wTitle, wText, wEditDate, wFile);
+        }
+        Response.Redirect(Request.UrlReferrer.ToString());
+    }
+    else
+    {
+        Message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
+    }
+
+}
+@section Scripts {
+
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(Message)
