@@ -8,7 +8,6 @@ using System.Configuration;
 using System.Web.WebPages;
 using System.Web.WebPages.Html;
 using WebMatrix.Data;
-using System.Text;
 
 /// <summary>
 /// Helper Functions

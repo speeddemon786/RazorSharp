@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Configuration;
+@{
     var Message = string.Empty;
     var Code = Request.QueryString["Error"];
 
@@ -52,7 +53,7 @@
                         <a href="@Href("~/")" class="btn btn-primary btn-lg">
                             <span class="glyphicon glyphicon-home"></span>
                             Take Me Home
-                        </a><a href="mailto:grant@speeddemon.co.za" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
+                        </a><a href="mailto:@ConfigurationManager.AppSettings["EmailTo"]" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
                     </div>
                 </div>
             </div>
