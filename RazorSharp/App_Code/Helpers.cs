@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -192,6 +193,14 @@ public class Helpers
         }
         sb.Append("<li class=\"text-center\"><a href=\"#\">Total Backups : " + BackupCount.ToString() + "</a>");
         sb.Append("</ul>");
+        return sb.ToString();
+    }
+
+    public static string FooterCopyright()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("<p><span class=\"small\">Copyright &copy; " + DateTime.Now.Year + " " + HttpContext.Current.Application["SiteName"] + ".</span>");
+        sb.Append("<span class=\"pull-right small\">Powered by Razor Sharp " + HttpContext.Current.Application["Version"] + ".</span></p>");
         return sb.ToString();
     }
 

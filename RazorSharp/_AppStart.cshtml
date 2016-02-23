@@ -15,6 +15,9 @@
     App.From = Settings.GetSetting("smtpFrom");
     App.SmtpTo = Settings.GetSetting("smtpTo");
 
+    //Version number
+    App.Version = "1.0";
+
     //Clear Visitors Data Older Than 30 Days
     AnalyticsUtility.DeleteOldVisitors();
 }
