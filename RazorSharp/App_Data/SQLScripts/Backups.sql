@@ -1,3 +1,8 @@
+--Table: Backups
+
+/* DROP TABLE Backups
+GO */
+
 CREATE TABLE Backups (
   Id            int NOT NULL IDENTITY (1, 1),
   pwId          int NOT NULL,

@@ -1,3 +1,8 @@
+--Table: Pages
+
+/* DROP TABLE Pages
+GO */
+
 CREATE TABLE Pages (
   pId           int NOT NULL IDENTITY (1, 1),
   pName         nvarchar(100) NOT NULL,
@@ -18,7 +23,7 @@ CREATE TABLE Pages (
 )
 GO
 
-CREATE INDEX PK__Pages__Index
+CREATE INDEX PK__Pages__00000000000000AC
   ON Pages
   (pId)
 GO

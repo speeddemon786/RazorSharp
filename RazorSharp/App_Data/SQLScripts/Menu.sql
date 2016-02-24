@@ -1,3 +1,8 @@
+--Table: Menu
+
+/* DROP TABLE Menu
+GO */
+
 CREATE TABLE Menu (
   Id         int NOT NULL IDENTITY (1, 1),
   mName      nvarchar(50),

@@ -1,3 +1,8 @@
+--Table: PageWidget
+
+/* DROP TABLE PageWidget
+GO */
+
 CREATE TABLE PageWidget (
   Id        int NOT NULL IDENTITY (1, 1),
   sName     nvarchar(100) NOT NULL,

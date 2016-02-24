@@ -18,7 +18,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{b4b9cd6e-6066-4e43-80a1-03018daab4c0}</ProjectGuid>
     <SourceWebPhysicalPath>$(MSBuildThisFileDirectory)</SourceWebPhysicalPath>
-    <SourceWebVirtualPath>/Speed-Demon</SourceWebVirtualPath>
+    <SourceWebVirtualPath>/RazorSharp</SourceWebVirtualPath>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SourceWebProject>
     </SourceWebProject>

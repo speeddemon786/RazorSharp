@@ -1,3 +1,8 @@
+--Table: Settings
+
+/* DROP TABLE Settings
+GO */
+
 CREATE TABLE Settings (
   id      int NOT NULL IDENTITY (1, 1),
   Name    nvarchar(100) NOT NULL,

@@ -1,3 +1,8 @@
+--Table: Widgets
+
+/* DROP TABLE Widgets
+GO */
+
 CREATE TABLE Widgets (
   Id         int NOT NULL IDENTITY (1, 1),
   wName      nvarchar(100) NOT NULL,

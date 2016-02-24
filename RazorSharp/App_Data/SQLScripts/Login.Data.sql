@@ -1,5 +1,0 @@
-BEGIN TRANSACTION
-GO
-INSERT INTO Login (Username, Password) VALUES (N'Grant', N'gb5669gb');
-COMMIT
-GO

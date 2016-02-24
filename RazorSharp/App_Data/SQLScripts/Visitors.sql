@@ -1,3 +1,8 @@
+--Table: Visitors
+
+/* DROP TABLE Visitors
+GO */
+
 CREATE TABLE Visitors (
   Id               int NOT NULL IDENTITY (1, 1),
   [TimeStamp]      datetime,
