@@ -195,18 +195,23 @@ public class AnalyticsUtility
             case "Browser":
                 SqlCount = "Select Count(*) From (Select Distinct Browser From Visitors) x";
                 break;
+
             case "Page":
                 SqlCount = "Select Count(*) From (Select Distinct Page From Visitors) x";
                 break;
+
             case "OperatingSystem":
                 SqlCount = "Select Count(*) From (Select Distinct OperatingSystem From Visitors) x";
                 break;
+
             case "Total":
                 SqlCount = "Select Count(*) From Visitors";
                 break;
+
             case "Referers":
                 SqlCount = "Select Count(*) From (Select Distinct Referer From Visitors) x";
                 break;
+
             case "Countries":
                 SqlCount = "Select Count(*) From (Select Distinct Country From Visitors) x";
                 break;

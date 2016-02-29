@@ -15,7 +15,9 @@ CREATE TABLE Visitors (
   Country          nvarchar(50),
   Referer          nvarchar(250),
   /* Keys */
-  PRIMARY KEY (Id), 
-  UNIQUE (Id)
+  CONSTRAINT PK__Visitors_Id
+    PRIMARY KEY (Id), 
+  CONSTRAINT UQ__Visitors_Id
+    UNIQUE (Id)
 )
 GO

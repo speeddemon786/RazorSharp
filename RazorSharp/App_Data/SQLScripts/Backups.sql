@@ -17,8 +17,11 @@ CREATE TABLE Backups (
   pBody         bit DEFAULT 'True',
   bType         nchar NOT NULL,
   pwFile        nvarchar(50) NOT NULL,
+  pAuthor       nvarchar(100),
   /* Keys */
-  PRIMARY KEY (Id), 
-  UNIQUE (Id)
+  CONSTRAINT PK__Backups_Id
+    PRIMARY KEY (Id), 
+  CONSTRAINT UQ__Backups_Id
+    UNIQUE (Id)
 )
 GO

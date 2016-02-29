@@ -169,7 +169,6 @@ public static class WebGridExtensions
         return builder.ToString(TagRenderMode.Normal);
     }
 
-
     private static bool ModeEnabled(WebGridPagerModes mode, WebGridPagerModes modeCheck)
     {
         return (mode & modeCheck) == modeCheck;

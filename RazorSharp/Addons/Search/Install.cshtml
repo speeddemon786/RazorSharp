@@ -5,7 +5,6 @@
     Page.Heading = "Installing...";
     var Message = string.Empty;
 
-
     IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
     using (var Db = Database.Open(Functions.GetDBName()))
     {
@@ -21,7 +20,6 @@
         var wTitle = "Search Results - Do Not Modify";
         var wText = "To change this widget please go to Addons";
         var wEditDate = DateTime.Now;
-
 
         using (var Db = Database.Open(Functions.GetDBName()))
         {

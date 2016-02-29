@@ -1,5 +1,4 @@
 function LoadCharts() {
-
     Morris.Area({
         element: 'page-views',
         data: Chart('area'),
@@ -29,9 +28,7 @@ function LoadCharts() {
         data: Chart('donut2'),
         resize: true
     });
-
 }
-
 
 function Chart(chartType) {
     var data = "";

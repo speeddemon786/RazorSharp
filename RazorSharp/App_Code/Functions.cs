@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Configuration;
 using System.Web.WebPages;
 using System.Web.WebPages.Html;
 using WebMatrix.Data;
@@ -267,11 +267,11 @@ public static class Functions
     // empty directory
     public static void emptyDirectory(this DirectoryInfo directory)
     {
-        foreach(FileInfo file in directory.GetFiles())
+        foreach (FileInfo file in directory.GetFiles())
         {
             file.Delete();
         }
-        foreach(DirectoryInfo subDirectory in directory.GetDirectories())
+        foreach (DirectoryInfo subDirectory in directory.GetDirectories())
         {
             subDirectory.Delete(true);
         }
@@ -303,5 +303,18 @@ public static class Functions
             }
         }
         return exists;
+    }
+
+    // get display name from username
+    public static string getDisplayName(string username)
+    {
+        string displayName = string.Empty;
+        using (var Db = Database.Open(GetDBName()))
+        {
+            var SqlSelect = "Select DisplayName From Users Where Username = @0";
+            displayName = Db.QueryValue(SqlSelect, username);
+            
+        }
+        return displayName;
     }
 }

@@ -19,6 +19,7 @@
     var mKeywords = Data.mKeywords;
     var pMasterPage = Data.pMasterPage;
     var pEditDate = Data.pEditDate;
+    var pAuthor = Data.pAuthor;
     var pBody = Data.pBody;
     var pBodyFile = Data.pBodyFile;
 
@@ -34,8 +35,8 @@
             //create backup copy before update
             using (var Db = Database.Open(Functions.GetDBName()))
             {
-                var SqlInsert = "Insert Into Backups (pwId, pwName, pwTitle, pwText, mTitle, mDescription, mKeywords, pMasterPage,pwDate, pBody, BType, pwFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)";
-                Db.Execute(SqlInsert, pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, 'p', pBodyFile);
+                var SqlInsert = "Insert Into Backups (pwId, pwName, pwTitle, pwText, mTitle, mDescription, mKeywords, pMasterPage, pwDate, pAuthor, pBody, BType, pwFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)";
+                Db.Execute(SqlInsert, pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, 'p', pBodyFile);
             }
             //update record
             pName = Request["pName"];
@@ -46,6 +47,7 @@
             mKeywords = Request["mKeywords"];
             pMasterPage = Request["pMasterPage"];
             pEditDate = DateTime.Now;
+            pAuthor = User.Identity.Name;
             pBody = false;
             pBodyFile = Request["pBodyFile"];
             if(Request["pBody"] == "on")
@@ -56,8 +58,8 @@
             {
                 using (var Db = Database.Open(Functions.GetDBName()))
                 {
-                    var SqlUpdate = "Update Pages Set pTitle=@0, pText=@1, mTitle=@2, mDescription=@3, mKeywords=@4, pMasterPage=@5, pEditdate=@6, pBody=@7, pBodyFile=@8 Where pId=@9";
-                    Db.Execute(SqlUpdate, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, pBodyFile, pId);
+                    var SqlUpdate = "Update Pages Set pTitle=@0, pText=@1, mTitle=@2, mDescription=@3, mKeywords=@4, pMasterPage=@5, pEditdate=@6, pAuthor=@7, pBody=@8, pBodyFile=@9 Where pId=@10";
+                    Db.Execute(SqlUpdate, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pBodyFile, pId);
                     Message = Helpers.alertSuccess("Page Successfully Saved!");
                 }
             }
@@ -160,7 +162,7 @@ $(window).on('load', function() {
     <div class="col-lg-12">
         <h2 class="page-header">Edit Page | <a href="@Href("~/Admin/WidgetsOnPage?pid=" + pId + "&pName=" + pName)">Widgets on Page</a> | <a href="@Href("~/Admin/AllPages")">All Pages</a> | <a href="@Href("~/Admin/NewPage")">Create Page</a></h2>
         <p>Use the form below to update the selected pages content & Meta information.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
-        <p>Last Edited: @pEditDate</p>
+        <p>Last Edited: @pEditDate By @Functions.getDisplayName(pAuthor);</p>
         <div class="col-lg-6">
             <div class="form-group">
                 @Html.Label("Name", "pName", new { @class = "control-label" })
@@ -205,7 +207,6 @@ $(window).on('load', function() {
                     </span>
                 </div>
             </div>
-
             </div>
             <div class="col-lg-12">
                @Html.TextArea("pText", @pText, new { @rows = "15", @cols = "80", @class = "form-control" })

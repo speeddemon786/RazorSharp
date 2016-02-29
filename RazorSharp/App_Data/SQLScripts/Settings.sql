@@ -9,6 +9,7 @@ CREATE TABLE Settings (
   Value   ntext,
   Source  nvarchar(100),
   /* Keys */
-  PRIMARY KEY (id)
+  CONSTRAINT PK__Settings_Id
+    PRIMARY KEY (id)
 )
 GO

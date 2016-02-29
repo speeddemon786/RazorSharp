@@ -69,7 +69,7 @@ public class Helpers
                         }
                     }
                 }
-            
+
                 string URL = item.mURL;
                 if (item.mURL.ToString().StartsWith("~"))
                 {

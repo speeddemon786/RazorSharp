@@ -11,9 +11,11 @@ CREATE TABLE Widgets (
   wEditDate  datetime NOT NULL,
   wFile      nvarchar(100) NOT NULL,
   /* Keys */
-  CONSTRAINT PK_Widgets
+  CONSTRAINT PK_Widgets_Id
     PRIMARY KEY (Id), 
-  UNIQUE (wName), 
-  UNIQUE (Id)
+  CONSTRAINT UQ__Widgets__Id
+    UNIQUE (Id), 
+  CONSTRAINT UQ__Widgets__wName
+    UNIQUE (wName)
 )
 GO

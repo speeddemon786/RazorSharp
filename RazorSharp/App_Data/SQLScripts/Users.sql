@@ -12,11 +12,12 @@ CREATE TABLE Users (
   IsActive     bit,
   DateCreated  datetime,
   /* Keys */
-  PRIMARY KEY (Id)
+  CONSTRAINT PK__Users_Id
+    PRIMARY KEY (Id)
 )
 GO
 
-/*Create Admin User*/
+/*Add Admin User*/
 
 BEGIN TRANSACTION
 GO

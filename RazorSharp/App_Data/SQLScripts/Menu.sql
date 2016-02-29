@@ -11,8 +11,9 @@ CREATE TABLE Menu (
   mTarget    nvarchar(10) NOT NULL DEFAULT '_self',
   mParentId  int NOT NULL DEFAULT 0,
   /* Keys */
-  CONSTRAINT PK_Menu
+  CONSTRAINT PK_Menu_Id
     PRIMARY KEY (Id), 
-  UNIQUE (Id)
+  CONSTRAINT UQ__Menu_Id
+    UNIQUE (Id)
 )
 GO

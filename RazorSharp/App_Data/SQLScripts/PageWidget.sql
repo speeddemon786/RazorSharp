@@ -10,9 +10,10 @@ CREATE TABLE PageWidget (
   wId       int NOT NULL,
   pId       int,
   /* Keys */
-  CONSTRAINT PK_PageWidget
+  CONSTRAINT PK_PageWidget_Id
     PRIMARY KEY (Id), 
-  UNIQUE (Id),
+  CONSTRAINT UQ__PageWidget_Id
+    UNIQUE (Id),
   /* Foreign keys */
   CONSTRAINT DeletePage
     FOREIGN KEY (pId)

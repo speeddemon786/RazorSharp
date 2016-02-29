@@ -3,7 +3,7 @@
 /// <summary>
 /// Class with label value pair to populate json for morris charts
 /// </summary>
-/// 
+///
 public class ChartData
 {
     public string label { get; set; }

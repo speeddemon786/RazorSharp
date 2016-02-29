@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Configuration;
+using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 /// <summary>
 /// class for encrypting and decrypting data
@@ -58,5 +58,4 @@ public class Encryption
         }
         return cipherText;
     }
-
 }

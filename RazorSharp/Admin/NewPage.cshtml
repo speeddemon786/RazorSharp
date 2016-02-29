@@ -14,6 +14,7 @@
     var pBodyFile = "";
     var Message = string.Empty;
     var fromPage = Request["fromPage"];
+    var pAuthor = User.Identity.Name;
 
     //populate dropdowns
     var pLayouts = Functions.pageLayouts("");
@@ -29,7 +30,7 @@
 
     if (IsPost && Validation.IsValid())
     {
-        //clean pName - it is not passed as parameter :(
+        //clean pName - it is not passed as parameter.
         var pNameSQL = pName.ToString().Trim().Replace(" ","-");
         pNameSQL = pNameSQL.Replace("'", "").ToLower();
 
@@ -38,7 +39,7 @@
             using (var Db = Database.Open(Functions.GetDBName()))
             {
                 //copy existing page
-                var SqlInsertPage = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, pHTML, pBodyFile) Select '" + pNameSQL + "' As pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, pHTML, pBodyFile FROM  Pages As Pages_1 Where (pName = @0)";
+                var SqlInsertPage = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, p.Author, pBody, pHTML, pBodyFile) Select '" + pNameSQL + "' As pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pHTML, pBodyFile FROM  Pages As Pages_1 Where (pName = @0)";
                 Db.Execute(SqlInsertPage, fromPage);
                 var copyId = Db.GetLastInsertId();
 
@@ -55,8 +56,8 @@
             {
                 using (var Db = Database.Open(Functions.GetDBName()))
                 {
-                    var sqlInsert = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, pHTML, pBodyFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)";
-                    Db.Execute(sqlInsert, pNameSQL, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pBody, 1, pBodyFile);
+                    var sqlInsert = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pHTML, pBodyFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)";
+                    Db.Execute(sqlInsert, pNameSQL, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, 1, pBodyFile);
                     Response.Redirect("Editpage?id=" + Db.GetLastInsertId());
                 }
             }
@@ -143,7 +144,6 @@ $(window).on('load', function() {
             <p class="form-actions">
                 <input class="btn btn-primary" type="submit" value="Create Page" />
             </p>
-
         </div>
      </div>
 </form>

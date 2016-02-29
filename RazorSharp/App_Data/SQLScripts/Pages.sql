@@ -13,17 +13,16 @@ CREATE TABLE Pages (
   mKeywords     nvarchar(200) NOT NULL,
   pMasterPage   nvarchar(50) NOT NULL,
   pEditDate     datetime NOT NULL,
+  pAuthor       nvarchar(100),
   pBody         bit NOT NULL DEFAULT 'True',
   pHTML         bit NOT NULL DEFAULT 'True',
   pBodyFile     nvarchar(50) NOT NULL,
   /* Keys */
-  PRIMARY KEY (pId), 
-  UNIQUE (pId), 
-  UNIQUE (pName)
+  CONSTRAINT PK__Pages_Id
+    PRIMARY KEY (pId), 
+  CONSTRAINT UQ__Pages__pId
+    UNIQUE (pId), 
+  CONSTRAINT UQ__Pages_pName
+    UNIQUE (pName)
 )
-GO
-
-CREATE INDEX PK__Pages__00000000000000AC
-  ON Pages
-  (pId)
 GO
