@@ -15,7 +15,7 @@
     }
     if (Data == null)
     {
-        throw new HttpException(404, "Not found");
+        throw new HttpException(404, "The requested page '" + pageName + "' was not found");
     }
     else
     {
