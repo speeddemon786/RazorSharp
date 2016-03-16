@@ -6,7 +6,7 @@ GO */
 CREATE TABLE Visitors (
   Id               int NOT NULL IDENTITY (1, 1),
   [TimeStamp]      datetime,
-  Page             nvarchar(250),
+  Page             nvarchar(100),
   Browser          nvarchar(50),
   BrowserVersion   nvarchar(50),
   OperatingSystem  nvarchar(50),

@@ -27,11 +27,6 @@ public class AnalyticsUtility
         var country = string.Empty;
         using (var client = new WebClient())
         {
-            if (IPAddress.Contains(":") && IPAddress != "::1")
-            {
-                var parts = IPAddress.Split(':');
-                IPAddress = parts[0];
-            }
             client.Headers.Add("user-agent", "ASP.NET WebClient");
             client.Headers.Add("Content-Type", "application/json");
             try
@@ -69,6 +64,11 @@ public class AnalyticsUtility
         if (string.IsNullOrEmpty(IPAddress))
         {
             IPAddress = Context.Request.ServerVariables["REMOTE_ADDR"];
+        }
+        if (IPAddress.Contains(":") && IPAddress != "::1")
+        {
+            var parts = IPAddress.Split(':');
+            IPAddress = parts[0];
         }
         string Country = GetCountry(IPAddress);
         string UserDNS = string.Empty;

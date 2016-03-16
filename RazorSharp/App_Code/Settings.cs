@@ -25,4 +25,13 @@ public class Settings
             Db.Execute(SqlUpdate, SettingValue, SettingName);
         }
     }
+
+    public static void CreateSetting(string SettingValue, string SettingName)
+    {
+        using (var Db = Database.Open(Functions.GetDBName()))
+        {
+            var SqlUpdate = "Insert Into Settings (Name, Value) Values (@0, @1)";
+            Db.Execute(SqlUpdate, SettingName, SettingValue);
+        }
+    }
 }
