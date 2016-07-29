@@ -1,7 +1,7 @@
 ﻿@using System.Text
 @{
 
-    StringBuilder sb = new StringBuilder();
+    var sb = new StringBuilder();
 
     sb.AppendLine("user-agent: *");
     sb.AppendLine("disallow: /Account/");
@@ -14,7 +14,7 @@
     sb.Append("sitemap: " + Request.Url.GetLeftPart(UriPartial.Authority) + "/sitemap.xml");
 
     Response.ContentType = "text/plain";
-    byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
+    var bytes = Encoding.UTF8.GetBytes(sb.ToString());
     Response.OutputStream.Write(bytes, 0, bytes.Length);
 
 }

@@ -1,48 +1,41 @@
 ﻿@{
-
     Page.Title = "Admin :: File Editor";
     Page.Heading = "File Editor";
     var pMasterPage = Request["pMasterPage"];
     var fileToEdit = Request["fileToEdit"];
     var fileContent = Request.Unvalidated("fileContent");
-    var Message = string.Empty;
-
-    //List all Layout files
-    DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Layouts"));
-    FileInfo[] fileInfo = dirInfo.GetFiles("_*.cshtml", SearchOption.TopDirectoryOnly);
-    var pLayouts = Functions.pageLayouts("");
+    var message = string.Empty;
+    var dirInfo = new DirectoryInfo(Server.MapPath("~/Layouts"));
+    var fileInfo = dirInfo.GetFiles("_*.cshtml", SearchOption.TopDirectoryOnly);
+    var pLayouts = Functions.PageLayouts("");
 
     if (pMasterPage.IsEmpty())
     {
-        pMasterPage = fileInfo[0].Name.ToString();
+        pMasterPage = fileInfo[0].Name;
     }
 
-    //List all css files for selected layout
-    FileInfo[] fileInfoCSS = null;
-    //some layout files may not have unique folders with the files
+    FileInfo[] fileInfoCss = null;
     try
     {
-        DirectoryInfo dirInfoCSS = new DirectoryInfo(Server.MapPath("~/Layouts/" + Functions.CleanNames(pMasterPage)));
-        fileInfoCSS = dirInfoCSS.GetFiles("*.css", SearchOption.AllDirectories);
+        var dirInfoCss = new DirectoryInfo(Server.MapPath("~/Layouts/" + Functions.CleanNames(pMasterPage)));
+        fileInfoCss = dirInfoCss.GetFiles("*.css", SearchOption.AllDirectories);
     }
     catch (Exception ex)
     {
-        Message = Helpers.alertDanger(ex.Message.ToString());
+        message = Helpers.alertDanger(ex.Message);
     }
-
     if (IsPost)
     {
-
         if (!fileContent.IsEmpty() && !fileToEdit.IsEmpty() && fileToEdit.Contains("Layouts"))
         {
             try
             {
                 File.WriteAllText(fileToEdit, fileContent);
-                Message = Helpers.alertSuccess("File Updated!!");
+                message = Helpers.alertSuccess("File Updated!!");
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.alertDanger(ex.Message);
             }
         }
     }
@@ -50,7 +43,7 @@
     {
         if (!fileToEdit.IsEmpty() && fileToEdit.Contains("Layouts"))
         {
-            fileContent = System.IO.File.ReadAllText(fileToEdit);
+            fileContent = File.ReadAllText(fileToEdit);
         }
     }
 }
@@ -66,7 +59,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" name="selectLayout" id="selectLayout" action="" role="form">
     <div class="col-lg-12">
         <h2 class="page-header">Select layout</h2>
@@ -83,7 +76,7 @@
                 Layout file: @Html.Raw(Helpers.EditMasterPageLink(pMasterPage))
             </div>
             <div class="form-group">
-                CSS file(s): @Html.Raw(Helpers.EditStyleSheetLinks(fileInfoCSS, pMasterPage))
+                CSS file(s): @Html.Raw(Helpers.EditStyleSheetLinks(fileInfoCss, pMasterPage))
             </div>
         </div>
     </div>

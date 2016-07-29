@@ -1,53 +1,46 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Create User";
     Page.Heading = "Create User";
-    var UserName = Request["UserName"];
-    var Password = Request["Password"];
-    var DisplayName = Request["DisplayName"];
-    var Email = Request["Email"];
-    var IsActive = false;
-    if (Request["IsActive"] == "on")
-    {
-        IsActive = true;
-    }
-    var DateCreated = DateTime.Now;
-    var Message = string.Empty;
-
+    var userName = Request["UserName"];
+    var password = Request["Password"];
+    var displayName = Request["DisplayName"];
+    var email = Request["Email"];
+    var isActive = Request["IsActive"] == "on";
+    var dateCreated = DateTime.Now;
+    var message = string.Empty;
     Validation.RequireField("UserName");
     Validation.RequireField("Password");
     Validation.RequireField("DisplayName");
     Validation.RequireField("Email");
-
     if (IsPost)
     {
         if (Validation.IsValid())
         {
             try
             {
-                if (!Functions.userExists(UserName))
+                if (!Functions.UserExists(userName))
                 {
-                    using (var Db = Database.Open(Functions.GetDBName()))
+                    using (var db = Database.Open(Functions.GetDbName()))
                     {
-                        var SqlInsert = "Insert Into Users (UserName, Password, DisplayName, Email, IsActive, DateCreated) Values (@0, @1, @2, @3, @4, @5)";
-                        Db.Execute(SqlInsert, UserName, Encryption.Encrypt(Password), DisplayName, Email, IsActive, DateCreated);
-                        Message = Helpers.alertSuccess("User Successfully Saved!");
+                        const string sqlInsert = "Insert Into Users (UserName, Password, DisplayName, Email, IsActive, DateCreated) Values (@0, @1, @2, @3, @4, @5)";
+                        db.Execute(sqlInsert, userName, Encryption.Encrypt(password), displayName, email, isActive, dateCreated);
+                        message = Helpers.alertSuccess("User Successfully Saved!");
                     }
                 }
                 else
                 {
-                    Message = Helpers.alertDanger("Username Already Exists!");
+                    message = Helpers.alertDanger("Username Already Exists!");
                 }
 
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.alertDanger(ex.Message);
             }
         }
         else
         {
-            Message = Helpers.alertDanger("Page Validation Failed, Please Complete All Required Fields!");
+            message = Helpers.alertDanger("Page Validation Failed, Please Complete All Required Fields!");
         }
     }
 }
@@ -95,7 +88,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" action="" role="form">
     <div class="col-lg-12">
         <h2 class="page-header"><a href="@Href("~/Admin/AllUsers")">All Users</a> | Create User</h2>
@@ -104,7 +97,7 @@
             <div class="form-group">
                 @Html.Label("Username", "UserName", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("UserName", UserName, new { @maxlength = "100", @class = "form-control" })
+                    @Html.TextBox("UserName", userName, new { @maxlength = "100", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The username of the person to be added. This cannot be changed once added"></i></span>
                 </div>
             </div>
@@ -112,7 +105,7 @@
             <div class="form-group">
                 @Html.Label("Password", "Password", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("Password", Password, new { @type ="password", @maxlength = "100", @class = "form-control" })
+                    @Html.TextBox("Password", password, new { @type ="password", @maxlength = "100", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Please select a secure password comprising upper/lowercase letters, number and special characters. (6-20 characters)"></i></span>
                 </div>
             </div>
@@ -120,7 +113,7 @@
             <div class="form-group">
                 @Html.Label("Display Name", "DisplayName", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("DisplayName", DisplayName, new { @maxlength = "100", @class = "form-control" })
+                    @Html.TextBox("DisplayName", displayName, new { @maxlength = "100", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="How the users name will display on the site"></i></span>
                 </div>
             </div>
@@ -128,7 +121,7 @@
             <div class="form-group">
                 @Html.Label("Email", "Email", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("Email", Email, new { @maxlength = "200", @class = "form-control" })
+                    @Html.TextBox("Email", email, new { @maxlength = "200", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Email address of user to be added. Will be used to notifications related to account."></i></span>
                 </div>
             </div>
@@ -137,7 +130,7 @@
                 @Html.Label("Is Active", "IsActive", new { @class = "control-label" })
                 <div class="input-group" style="width:50px">
                     <span class="input-group-addon beautiful">
-                        @Html.CheckBox("IsActive", IsActive)
+                        @Html.CheckBox("IsActive", isActive)
                     </span>
                     <span class="input-group-addon beautiful">
                         <i class="glyphicon glyphicon-info-sign" title="Should be selected for to allow user to log in."></i>

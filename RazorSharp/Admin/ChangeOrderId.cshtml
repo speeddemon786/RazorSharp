@@ -1,31 +1,24 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
 
-    var TableName = Request["tn"];
-    var ChangeValue = Request["cv"];
-    var Id = Request["id"];
+    var tableName = Request["tn"];
+    var changeValue = Request["cv"];
+    var id = Request["id"];
     var sqlUpdate = string.Empty;
 
-    //update menu order
-    if (TableName.ToString().ToLower() == "menu")
+    if (tableName.ToLower() == "menu")
     {
         sqlUpdate = "Update Menu Set mOrderId=mOrderId +@0 Where Id=@1";
     }
-    //update order of widgets in page
-    if (TableName.ToString().ToLower() == "pagewidget")
+    if (tableName.ToLower() == "pagewidget")
     {
         sqlUpdate = "Update PageWidget Set wOrderId=wOrderId +@0 Where Id=@1";
     }
-    try
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        db.Execute(sqlUpdate, changeValue, id);
+        if (Request.UrlReferrer != null)
         {
-            Db.Execute(sqlUpdate, ChangeValue, Id);
             Response.Redirect(Request.UrlReferrer.ToString());
         }
-    }
-    catch (Exception)
-    {
-        throw;
     }
 }

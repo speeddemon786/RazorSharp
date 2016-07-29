@@ -1,57 +1,55 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Edit User";
     Page.Heading = "Edit User";
-
-    var Id = Request["id"];
-    var Message = string.Empty;
-    dynamic Data = null;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    var id = Request["id"];
+    var message = string.Empty;
+    dynamic data;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = " Select * From Users Where Id=@0";
-        Data = Db.QuerySingle(SqlSelect, Id);
+        const string sqlSelect = " Select * From Users Where Id=@0";
+        data = db.QuerySingle(sqlSelect, id);
     }
-    var UserName = Data.UserName;
-    var Password = Encryption.Decrypt(Data.Password);
-    var DisplayName = Data.DisplayName;
-    var Email = Data.Email;
-    var IsActive = Data.IsActive;
+    var userName = data.UserName;
+    var password = Encryption.Decrypt(data.Password);
+    var displayName = data.DisplayName;
+    var email = data.Email;
+    var isActive = data.IsActive;
 
     if (IsPost)
     {
         if (Validation.IsValid())
         {
-            UserName = Request["UserName"];
-            Password = Request["Password"];
-            DisplayName = Request["DisplayName"];
-            Email = Request["Email"];
-            IsActive = false;
+            userName = Request["UserName"];
+            password = Request["Password"];
+            displayName = Request["DisplayName"];
+            email = Request["Email"];
+            isActive = false;
             if (Request["IsActive"] == "on")
             {
-                IsActive = true;
+                isActive = true;
             }
             try
             {
-                using (var Db = Database.Open(Functions.GetDBName()))
+                using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var SqlUpdate = "Update Users Set UserName=@0, Password=@1, DisplayName=@2, Email=@3, IsActive=@4 Where Id=@5";
-                    Db.Execute(SqlUpdate, UserName, Encryption.Encrypt(Password), DisplayName, Email, IsActive, Id);
-                    Message = Helpers.alertSuccess("User Successfully Saved!");
+                    const string sqlUpdate = "Update Users Set UserName=@0, Password=@1, DisplayName=@2, Email=@3, IsActive=@4 Where Id=@5";
+                    db.Execute(sqlUpdate, userName, Encryption.Encrypt(password), displayName, email, isActive, id);
+                    message = Helpers.alertSuccess("User Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.alertDanger(ex.Message);
             }
         }
         else
         {
-            Message = Helpers.alertDanger("Page Validation Failed, Please Complete All Required Fields!");
+            message = Helpers.alertDanger("Page Validation Failed, Please Complete All Required Fields!");
         }
     }
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
     $(window).on('load', function() {
         $('form').validate({
             rules: {
@@ -94,17 +92,17 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form action="" method="post" id="editWidget">
     <div class="col-lg-12">
         <h2 class="page-header">Edit User | <a href="@Href("~/Admin/AllUsers")">All Users</a> | <a href="@Href("~/Admin/NewUser")">Create User</a> </h2>
-        <p>Use the form below to updatre a new user on the site. The new user will only be able to log in if the account was set to 'Active'.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+        <p>Use the form below to update a new user on the site. The new user will only be able to log in if the account was set to 'Active'.<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
         <div class="col-lg-6">
 
             <div class="form-group">
                 @Html.Label("Username", "UserName", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("UserName", UserName, new { @maxlength = "100", @class = "form-control disabled", @readonly = "readonly"})
+                    @Html.TextBox("UserName", userName, new { @maxlength = "100", @class = "form-control disabled", @readonly = "readonly"})
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The username of the person to be added. This cannot be changed once added"></i></span>
                 </div>
             </div>
@@ -112,7 +110,7 @@
             <div class="form-group">
                 @Html.Label("Password", "Password", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("Password", Password, new { @type = "password", @maxlength = "100", @class = "form-control" })
+                    @Html.TextBox("Password", password, new { @type = "password", @maxlength = "100", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Please select a secure password comprising upper/lowercase letters, number and special characters. (6-20 characters)"></i></span>
                 </div>
             </div>
@@ -120,7 +118,7 @@
             <div class="form-group">
                 @Html.Label("Display Name", "DisplayName", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("DisplayName", DisplayName, new { @maxlength = "100", @class = "form-control" })
+                    @Html.TextBox("DisplayName", displayName, new { @maxlength = "100", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="How the users name will display on the site"></i></span>
                 </div>
             </div>
@@ -128,7 +126,7 @@
             <div class="form-group">
                 @Html.Label("Email", "Email", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("Email", Email, new { @maxlength = "200", @class = "form-control" })
+                    @Html.TextBox("Email", email, new { @maxlength = "200", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Email address of user to be added. Will be used to notifications related to account."></i></span>
                 </div>
             </div>
@@ -137,7 +135,7 @@
                 @Html.Label("Is Active", "IsActive", new { @class = "control-label" })
                 <div class="input-group" style="width:50px">
                     <span class="input-group-addon beautiful">
-                        @Html.CheckBox("IsActive", @IsActive)
+                        @Html.CheckBox("IsActive", isActive)
                     </span>
                     <span class="input-group-addon beautiful">
                         <i class="glyphicon glyphicon-info-sign" title="Should be selected for to allow user to log in."></i>

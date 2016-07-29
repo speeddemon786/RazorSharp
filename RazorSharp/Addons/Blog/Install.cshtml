@@ -1,19 +1,17 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Layout = "~/Admin/_Layout.cshtml";
     Page.Title = "Blog - Install";
     Page.Heading = "Installing...";
-    var Message = string.Empty;
+    var message = string.Empty;
 
-    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-    using (var Db = Database.Open(Functions.GetDBName()))
+    IEnumerable<dynamic> data;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = "Select * From Widgets Where wName = 'blog'";
-        Data = Db.Query(SqlSelect);
+        const string sqlSelect = "Select * From Widgets Where wName = 'blog'";
+        data = db.Query(sqlSelect);
     }
 
-    if (Data.Count() == 0){
-
+    if (!data.Any()){
         //create Tables
 
         //    var ct = "CREATE TABLE [Blog] (  [Id] int NOT NULL  IDENTITY (1,1), [smtpServer] nvarchar(100) NULL, [smtpPort] int NULL, [smtpSSL] bit NULL DEFAULT 0, [smtpuser] nvarchar(100) NULL, [smtpPwd] nvarchar(100) NULL, [smtpFrom] nvarchar(100) NULL, [smtpTo] nvarchar(100) NULL, [errName] nvarchar(500) NULL, [errEmail] nvarchar(500) NULL, [errEmail2] nvarchar(500) NULL, [errPhone] nvarchar(500) NULL, [errRequest] nvarchar(500) NULL, [thankYou] nvarchar(500) NULL, [mailSubject] nvarchar(100) NULL)";
@@ -29,22 +27,25 @@
         //    db.Execute(at,"mail.yourdomain.com", 25, false, "you@yourdomain.com", "secret", "you@yourdomain.com", "you@yourdomain.com", "Enter Name", "Enter E-mail", "Enter valid E-mail", "Enter Phone", "Enter Question", "Thank You, e-mail sent. Someone will contact you within 24h", "E-mail from website");
 
         //    //insert widget
-        var wName = "Blog";
-        var wFile = "addon_Blog.cshtml";
-        var wTitle = "Blog - Do Not Modify";
-        var wText = "To change this widget please go to Addons";
+        const string wName = "Blog";
+        const string wFile = "addon_Blog.cshtml";
+        const string wTitle = "Blog - Do Not Modify";
+        const string wText = "To change this widget please go to Addons";
         var wEditDate = DateTime.Now;
 
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
-            Db.Execute(SqlInsert, wName, wTitle, wText, wEditDate, wFile);
+            const string sqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
+            db.Execute(sqlInsert, wName, wTitle, wText, wEditDate, wFile);
         }
-        Response.Redirect(Request.UrlReferrer.ToString());
+        if (Request.UrlReferrer != null)
+        {
+            Response.Redirect(Request.UrlReferrer.ToString());
+        }
     }
     else
     {
-        Message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
+        message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
     }
 
 }
@@ -54,4 +55,4 @@
 @section Menu{
     @RenderPage("~/Admin/_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)

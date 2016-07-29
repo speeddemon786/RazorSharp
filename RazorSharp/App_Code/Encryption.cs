@@ -17,16 +17,17 @@ public class Encryption
 
     public static string Encrypt(string clearText)
     {
-        string EncryptionKey = GetEncryptionKey();
-        byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
-        using (Aes encryptor = Aes.Create())
+        var encryptionKey = GetEncryptionKey();
+        var clearBytes = Encoding.Unicode.GetBytes(clearText);
+        using (var encryptor = Aes.Create())
         {
-            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0X49, 0X76, 0X61, 0X6E, 0X20, 0X4D, 0X65, 0X64, 0X76, 0X65, 0X64, 0X65, 0X76 });
+            var pdb = new Rfc2898DeriveBytes(encryptionKey, new byte[] { 0X49, 0X76, 0X61, 0X6E, 0X20, 0X4D, 0X65, 0X64, 0X76, 0X65, 0X64, 0X65, 0X76 });
+            if (encryptor == null) return clearText;
             encryptor.Key = pdb.GetBytes(32);
             encryptor.IV = pdb.GetBytes(16);
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                using (var cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
                 {
                     cs.Write(clearBytes, 0, clearBytes.Length);
                     cs.Close();
@@ -39,16 +40,17 @@ public class Encryption
 
     public static string Decrypt(string cipherText)
     {
-        string EncryptionKey = GetEncryptionKey();
-        byte[] cipherBytes = Convert.FromBase64String(cipherText);
-        using (Aes encryptor = Aes.Create())
+        var encryptionKey = GetEncryptionKey();
+        var cipherBytes = Convert.FromBase64String(cipherText);
+        using (var encryptor = Aes.Create())
         {
-            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0X49, 0X76, 0X61, 0X6E, 0X20, 0X4D, 0X65, 0X64, 0X76, 0X65, 0X64, 0X65, 0X76 });
+            var pdb = new Rfc2898DeriveBytes(encryptionKey, new byte[] { 0X49, 0X76, 0X61, 0X6E, 0X20, 0X4D, 0X65, 0X64, 0X76, 0X65, 0X64, 0X65, 0X76 });
+            if (encryptor == null) return cipherText;
             encryptor.Key = pdb.GetBytes(32);
             encryptor.IV = pdb.GetBytes(16);
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                using (var cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
                 {
                     cs.Write(cipherBytes, 0, cipherBytes.Length);
                     cs.Close();

@@ -2,11 +2,8 @@
 @{
     RouteTable.Routes.MapWebPageRoute("{PageName}/{Par1}/{Par2}", "~/Default.cshtml", new { PageName = "default", Par1=-1, Par2=-1});
 
-    // Global Variables
     App.SiteName = Settings.GetSetting("siteName");
     App.SiteAnalytics = Settings.GetSetting("siteAnalytics");
-
-    //Email Variables.
     App.SmtpServer = Settings.GetSetting("smtpServer");
     App.SmtpPort = Settings.GetSetting("smtpPort");
     App.EnableSsl = Convert.ToBoolean(Settings.GetSetting("smtpSSL"));
@@ -14,10 +11,7 @@
     App.Password = Settings.GetSetting("smtpPass");
     App.From = Settings.GetSetting("smtpFrom");
     App.SmtpTo = Settings.GetSetting("smtpTo");
-
-    //Version number
     App.Version = "1.0";
 
-    //Clear Visitors Data Older Than 30 Days
     AnalyticsUtility.DeleteOldVisitors();
 }

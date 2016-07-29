@@ -18,7 +18,7 @@ public class Helpers
 
         var Context = new HttpContextWrapper(HttpContext.Current);
         IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlSelect = "Select * From Menu Order By mOrderId DESC";
             Data = Db.Query(SqlSelect);
@@ -166,7 +166,7 @@ public class Helpers
     {
         StringBuilder sb = new StringBuilder();
         IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlSelect = "Select Top " + Count + " pwTitle, pwDate From Backups Order By pwDate DESC";
             Data = Db.Query(SqlSelect);
@@ -186,7 +186,7 @@ public class Helpers
         }
         sb.Append("<li class=\"divider\"></li>");
         var BackupCount = 0;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlSelect = "Select Count(*) From Backups";
             BackupCount = (int)Db.QueryValue(SqlSelect);

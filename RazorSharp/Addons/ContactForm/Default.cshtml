@@ -1,33 +1,31 @@
-﻿@using WebMatrix.Data;
-@{
-    var Message = string.Empty;
+﻿@{
+    var message = string.Empty;
 
-    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-    using (var Db = Database.Open(Functions.GetDBName()))
+    IEnumerable<dynamic> data;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = "Select * From Widgets Where wName = 'contact-form'";
-        Data = Db.Query(SqlSelect);
+        const string sqlSelect = "Select * From Widgets Where wName = 'contact-form'";
+        data = db.Query(sqlSelect);
     }
-    if (Data.Count() == 0)
+    if (!data.Any())
     {
         Response.Redirect("~/Addon/ContactForm/Install");
     }
-    //show success messages
     var messageId = Request["messageId"];
     if (!messageId.IsEmpty())
     {
         switch (messageId)
         {
             case "1":
-                Message = Helpers.alertSuccess("Contact form successfully installed!");
+                message = Helpers.alertSuccess("Contact form successfully installed!");
                 break;
             default:
-                Message = Helpers.alertWarning("Unknown messageId");
+                message = Helpers.alertWarning("Unknown messageId");
                 break;
         }
     }
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" action="">
     <div class="row">
         <div class="col-lg-12">

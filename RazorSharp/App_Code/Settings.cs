@@ -9,7 +9,7 @@ public class Settings
     public static string GetSetting(string SettingName)
     {
         var Result = string.Empty;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlSelect = "Select Value From Settings Where Name= @0";
             Result = Db.QueryValue(SqlSelect, SettingName);
@@ -19,7 +19,7 @@ public class Settings
 
     public static void UpdateSetting(string SettingValue, string SettingName)
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlUpdate = "Update Settings Set Value=@0 Where Name=@1";
             Db.Execute(SqlUpdate, SettingValue, SettingName);
@@ -28,7 +28,7 @@ public class Settings
 
     public static void CreateSetting(string SettingValue, string SettingName)
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var Db = Database.Open(Functions.GetDbName()))
         {
             var SqlUpdate = "Insert Into Settings (Name, Value) Values (@0, @1)";
             Db.Execute(SqlUpdate, SettingName, SettingValue);

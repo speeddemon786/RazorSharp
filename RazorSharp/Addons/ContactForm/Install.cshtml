@@ -1,36 +1,37 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Layout = "~/Admin/_Layout.cshtml";
     Page.Title = "Contact Form - Install";
     Page.Heading = "Installing...";
-    var Message = string.Empty;
+    var message = string.Empty;
 
-    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-    using (var Db = Database.Open(Functions.GetDBName()))
+    IEnumerable<dynamic> data;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = "Select * From Widgets Where wName = 'contact-form'";
-        Data = Db.Query(SqlSelect);
+        const string sqlSelect = "Select * From Widgets Where wName = 'contact-form'";
+        data = db.Query(sqlSelect);
     }
 
-    if (Data.Count() == 0){
-
+    if (!data.Any()){
         //insert widget
-        var wName = "contact-form";
-        var wFile = "addon_ContactForm.cshtml";
-        var wTitle = "Contact Form - Do Not Modify";
-        var wText = "To change this widget please go to Addons";
+        const string wName = "contact-form";
+        const string wFile = "addon_ContactForm.cshtml";
+        const string wTitle = "Contact Form - Do Not Modify";
+        const string wText = "To change this widget please go to Addons";
         var wEditDate = DateTime.Now;
 
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
-            Db.Execute(SqlInsert, wName, wTitle, wText, wEditDate, wFile);
+            const string sqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
+            db.Execute(sqlInsert, wName, wTitle, wText, wEditDate, wFile);
         }
-        Response.Redirect(Request.UrlReferrer.ToString());
+        if (Request.UrlReferrer != null)
+        {
+            Response.Redirect(Request.UrlReferrer.ToString());
+        }
     }
     else
     {
-        Message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
+        message = Helpers.alertWarning("The Addon Install Has Already Been Done!");
     }
 
 }
@@ -40,4 +41,4 @@
 @section Menu{
     @RenderPage("~/Admin/_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)

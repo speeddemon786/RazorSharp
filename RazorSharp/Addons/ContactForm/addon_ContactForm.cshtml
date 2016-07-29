@@ -1,6 +1,6 @@
 ﻿@{
     var isActive = true;
-    var Message = string.Empty;
+    var message = string.Empty;
     Validation.RequireField("Name");
     Validation.RequireField("Email");
     Validation.RequireField("Phone");
@@ -9,42 +9,30 @@
 
     if (IsPost)
     {
-        var Name = Request.Form["Name"];
-        var Email = Request.Form["Email"];
-        var Phone = Request.Form["Phone"];
-        var Enquiry = Request.Form["Enquiry"];
-
         if (Validation.IsValid())
         {
             AntiForgery.Validate();
-            var mailBody = "";
-            foreach (var item in Request.Form)
-            {
-                mailBody += item.ToString() + " : " + Request[item.ToString()] + "<br />";
-            }
+            var mailBody = Request.Form.Cast<object>().Aggregate("", (current, item) => current + (item.ToString() + " : " + Request[item.ToString()] + "<br />"));
             try
             {
-                // Initialize WebMail helper
                 WebMail.SmtpServer = App.SmtpServer;
                 WebMail.SmtpPort = App.SmtpPort;
                 WebMail.EnableSsl = App.EnableSsl;
                 WebMail.UserName = App.UserName;
                 WebMail.Password = App.Password;
                 WebMail.From = App.From;
-
-                // Send email
                 WebMail.Send(to: App.SmtpTo, subject: "E-mail from website : " + App.SiteName, body: mailBody);
-                Message = Helpers.alertSuccess("Message Successfully Sent!");
+                message = Helpers.alertSuccess("Message Successfully Sent!");
                 isActive = false;
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.alertDanger(ex.Message);
             }
         }
         else
         {
-            Message = Helpers.alertWarning("Please Complete All Required Fields!");
+            message = Helpers.alertWarning("Please Complete All Required Fields!");
         }
     }
 }
@@ -52,7 +40,7 @@
     @AntiForgery.GetHtml()
     <div class="col-lg-8">
         <h3>Contact Form</h3>
-        @Html.Raw(Message)
+        @Html.Raw(message)
         <div class="form-group">
             @Html.Label("Your Name", "Name", new { @class = "control-label" })
             <div class="controls">

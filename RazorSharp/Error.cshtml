@@ -1,27 +1,27 @@
 ﻿@using System.Configuration;
 @{
-    var Message = string.Empty;
-    var Code = Request.QueryString["Error"];
+    string message;
+    var code = Request.QueryString["Error"];
 
-    switch (Code)
+    switch (code)
     {
         case "BadRequest":
-            Message = "An invalid requested was received!";
+            message = "An invalid requested was received!";
             break;
         case "Unauthorized":
-            Message = "You are not authorized to view this page!";
+            message = "You are not authorized to view this page!";
             break;
         case "Forbidden":
-            Message = "You do not have permission to access the requested resource";
+            message = "You do not have permission to access the requested resource";
             break;
         case "NotFound":
-            Message = "Page or resource not found!";
+            message = "Page or resource not found!";
             break;
         case "InternalServerError":
-            Message = "An internal server error occured!";
+            message = "An internal server error occured!";
             break;
         default:
-            Message = "An unhandled error occured!";
+            message = "An unhandled error occured!";
             break;
     }
 }
@@ -44,7 +44,7 @@
                         Oops!
                     </h1>
                     <h2 class="grey">
-                        @Message
+                        @message
                     </h2>
                     <div class="error-details grey">
                         Sorry, an error has occured and an administrator has been notified!
