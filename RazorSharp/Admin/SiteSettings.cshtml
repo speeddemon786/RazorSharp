@@ -6,12 +6,12 @@
     var siteAnalytics = Request.Unvalidated("siteAnalytics");
     var smtpServer = Request["smtpServer"];
     var smtpPort = Request["smtpPort"];
-    bool smtpSSL = Request["smtpSSL"].AsBool();
+    bool smtpSsl = Request["smtpSSL"].AsBool();
     var smtpUser = Request["smtpUser"];
     var smtpPass= Request["smtpPwd"];
     var smtpFrom = Request["smtpFrom"];
     var smtpTo = Request["smtpTo"];
-    var Message = string.Empty;
+    var message = string.Empty;
 
     Validation.RequireField("siteName");
     Validation.RequireField("smtpServer");
@@ -34,18 +34,18 @@
                 Settings.UpdateSetting(siteAnalytics, "siteAnalytics");
                 Settings.UpdateSetting(smtpServer, "smtpServer");
                 Settings.UpdateSetting(smtpPort, "smtpPort");
-                Settings.UpdateSetting(smtpSSL.ToString(), "smtpSSL");
+                Settings.UpdateSetting(smtpSsl.ToString(), "smtpSSL");
                 Settings.UpdateSetting(smtpUser, "smtpUser");
                 Settings.UpdateSetting(smtpPass, "smtpPass");
                 Settings.UpdateSetting(smtpFrom, "smtpFrom");
                 Settings.UpdateSetting(smtpTo, "smtpTo");
 
-                Message = Helpers.alertSuccess("Settings Successfully Saved!");
+                message = Helpers.AlertSuccess("Settings Successfully Saved!");
 
                 //refresh all settings for the site
                 App.SmtpServer = smtpServer;
                 App.SmtpPort = smtpPort.AsInt();
-                App.EnableSsl = smtpSSL;
+                App.EnableSsl = smtpSsl;
                 App.UserName = smtpUser;
                 App.Password = smtpPass;
                 App.From = smtpFrom;
@@ -55,7 +55,7 @@
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message.ToString());
             }
         }
     }
@@ -65,7 +65,7 @@
         siteAnalytics = Settings.GetSetting("siteAnalytics");
         smtpServer = Settings.GetSetting("smtpServer");
         smtpPort = Settings.GetSetting("smtpPort");
-        smtpSSL = Convert.ToBoolean(Settings.GetSetting("smtpSSL"));
+        smtpSsl = Convert.ToBoolean(Settings.GetSetting("smtpSSL"));
         smtpUser = Settings.GetSetting("smtpUser");
         smtpPass = Settings.GetSetting("smtpPass");
         smtpFrom = Settings.GetSetting("smtpFrom");
@@ -73,7 +73,7 @@
     }
 
     //populate dropdowns
-    var emailSSL = Functions.emailSSL(smtpSSL);
+    var emailSsl = Functions.EmailSsl(smtpSsl);
 }
 @section Scripts{
 <script type='text/javascript'>
@@ -127,7 +127,7 @@ $(window).on('load', function() {
 @section menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" action="">
     <div class="col-lg-12">
     <h2 class="page-header">Site Setup</h2>
@@ -171,7 +171,7 @@ $(window).on('load', function() {
             <div class="form-group">
                 @Html.Label("Enable SSL", "smtpSSL", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.DropDownList("smtpSSL", emailSSL, new { @class = "form-control" })
+                    @Html.DropDownList("smtpSSL", emailSsl, new { @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Select Yes for Gmail"></i></span>
                 </div>
             </div>

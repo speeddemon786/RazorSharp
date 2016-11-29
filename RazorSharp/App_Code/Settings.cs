@@ -6,32 +6,32 @@
 
 public class Settings
 {
-    public static string GetSetting(string SettingName)
+    public static string GetSetting(string settingName)
     {
-        var Result = string.Empty;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        string result;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Value From Settings Where Name= @0";
-            Result = Db.QueryValue(SqlSelect, SettingName);
+            const string sqlSelect = "Select Value From Settings Where Name= @0";
+            result = db.QueryValue(sqlSelect, settingName);
         }
-        return Result;
+        return result;
     }
 
-    public static void UpdateSetting(string SettingValue, string SettingName)
+    public static void UpdateSetting(string settingValue, string settingName)
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlUpdate = "Update Settings Set Value=@0 Where Name=@1";
-            Db.Execute(SqlUpdate, SettingValue, SettingName);
+            const string sqlUpdate = "Update Settings Set Value=@0 Where Name=@1";
+            db.Execute(sqlUpdate, settingValue, settingName);
         }
     }
 
-    public static void CreateSetting(string SettingValue, string SettingName)
+    public static void CreateSetting(string settingValue, string settingName)
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlUpdate = "Insert Into Settings (Name, Value) Values (@0, @1)";
-            Db.Execute(SqlUpdate, SettingName, SettingValue);
+            const string sqlUpdate = "Insert Into Settings (Name, Value) Values (@0, @1)";
+            db.Execute(sqlUpdate, settingName, settingValue);
         }
     }
 }

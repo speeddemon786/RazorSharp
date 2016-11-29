@@ -3,17 +3,17 @@
     Page.Heading = "Log Data";
     var fileToEdit = Server.MapPath("~/App_Data/ErrorLog.txt");
     var fileContent = string.Empty;
-    var Message = string.Empty;
+    var message = string.Empty;
     if (IsPost)
     {
         try
         {
             File.WriteAllText(fileToEdit, string.Empty);
-            Message = Helpers.alertSuccess("Log Successfully Cleared!!");
+            message = Helpers.AlertSuccess("Log Successfully Cleared!!");
         }
         catch (Exception ex)
         {
-            Message = Helpers.alertDanger(ex.Message.ToString());
+            message = Helpers.AlertDanger(ex.Message.ToString());
         }
     }
     else
@@ -28,7 +28,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" name="readLogs" id="readLogs" action="" role="form">
     <div class="col-lg-12">
         <h2 class="page-header">Log Data</h2>

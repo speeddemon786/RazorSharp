@@ -11,29 +11,14 @@ using System.Web.WebPages;
 
 public static class WebGridExtensions
 {
-    public static HelperResult PagerList(
-    this WebGrid webGrid,
-    WebGridPagerModes mode = WebGridPagerModes.NextPrevious | WebGridPagerModes.Numeric,
-    string firstText = null,
-    string previousText = null,
-    string nextText = null,
-    string lastText = null,
-    int numericLinksCount = 5,
-    string paginationStyle = null)
+    public static HelperResult PagerList( this WebGrid webGrid, WebGridPagerModes mode = WebGridPagerModes.NextPrevious | WebGridPagerModes.Numeric, string firstText = null, 
+        string previousText = null, string nextText = null, string lastText = null, int numericLinksCount = 5, string paginationStyle = null)
     {
         return PagerList(webGrid, mode, firstText, previousText, nextText, lastText, numericLinksCount, paginationStyle, explicitlyCalled: true);
     }
 
-    private static HelperResult PagerList(
-        WebGrid webGrid,
-        WebGridPagerModes mode,
-        string firstText,
-        string previousText,
-        string nextText,
-        string lastText,
-        int numericLinksCount,
-        string paginationStyle,
-        bool explicitlyCalled)
+    private static HelperResult PagerList(WebGrid webGrid, WebGridPagerModes mode, string firstText, string previousText,
+        string nextText, string lastText, int numericLinksCount, string paginationStyle, bool explicitlyCalled)
     {
         var currentPage = webGrid.PageIndex;
         var totalPages = webGrid.PageCount;
@@ -47,7 +32,7 @@ public static class WebGridExtensions
         }
         if (ModeEnabled(mode, WebGridPagerModes.FirstLast))
         {
-            if (String.IsNullOrEmpty(firstText))
+            if (string.IsNullOrEmpty(firstText))
             {
                 firstText = "First";
             }
@@ -63,7 +48,7 @@ public static class WebGridExtensions
         }
         if (ModeEnabled(mode, WebGridPagerModes.NextPrevious))
         {
-            if (String.IsNullOrEmpty(previousText))
+            if (string.IsNullOrEmpty(previousText))
             {
                 previousText = "Prev";
             }
@@ -92,7 +77,7 @@ public static class WebGridExtensions
                 last = Math.Min(last + (0 - first), lastPage);
                 first = 0;
             }
-            for (int i = first; i <= last; i++)
+            for (var i = first; i <= last; i++)
             {
                 var pageText = (i + 1).ToString(CultureInfo.InvariantCulture);
                 var part = new TagBuilder("li")
@@ -108,11 +93,11 @@ public static class WebGridExtensions
         }
         if (ModeEnabled(mode, WebGridPagerModes.NextPrevious))
         {
-            if (String.IsNullOrEmpty(nextText))
+            if (string.IsNullOrEmpty(nextText))
             {
                 nextText = "Next";
             }
-            int page = currentPage == lastPage ? lastPage : currentPage + 1;
+            var page = currentPage == lastPage ? lastPage : currentPage + 1;
             var part = new TagBuilder("li")
             {
                 InnerHtml = GridLink(webGrid, webGrid.GetPageUrl(page), nextText)
@@ -125,7 +110,7 @@ public static class WebGridExtensions
         }
         if (ModeEnabled(mode, WebGridPagerModes.FirstLast))
         {
-            if (String.IsNullOrEmpty(lastText))
+            if (string.IsNullOrEmpty(lastText))
             {
                 lastText = "Last";
             }
@@ -157,7 +142,7 @@ public static class WebGridExtensions
         return new HelperResult(writer => writer.Write(html));
     }
 
-    private static String GridLink(WebGrid webGrid, string url, string text)
+    private static string GridLink(WebGrid webGrid, string url, string text)
     {
         var builder = new TagBuilder("a");
         builder.SetInnerText(text);

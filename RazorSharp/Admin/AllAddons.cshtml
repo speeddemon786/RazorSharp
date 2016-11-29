@@ -1,44 +1,44 @@
 ﻿@{
     Page.Title = "Admin :: All Addons";
     Page.Heading = "All Addons";
-    var Message = string.Empty;
+    var message = string.Empty;
 
     DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
     DirectoryInfo[] listAddons = dirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly);
-    var Addon = Request["addon"];
-    if (!Addon.IsEmpty())
+    var addon = Request["addon"];
+    if (!addon.IsEmpty())
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
             // Get Widget ID
-            var SqlSelect = "Select id From Widgets Where wName=@0";
-            var wId = Db.QueryValue(SqlSelect, Addon);
+            var sqlSelect = "Select id From Widgets Where wName=@0";
+            var wId = db.QueryValue(sqlSelect, addon);
             if (string.IsNullOrEmpty(wId))
             {
                 wId = "0";
             }
             // Delete Widget
-            var SqlDelete = "Delete From Widgets Where Id=@0";
-            Db.Execute(SqlDelete, wId);
+            var sqlDelete = "Delete From Widgets Where Id=@0";
+            db.Execute(sqlDelete, wId);
             // Delete Addon Files
-            var AddonPath = Server.MapPath("~/Addons/" + Addon);
-            if (Directory.Exists(AddonPath))
+            var addonPath = Server.MapPath("~/Addons/" + addon);
+            if (Directory.Exists(addonPath))
             {
-                DirectoryInfo DirAddon = new DirectoryInfo(AddonPath);
-                Functions.emptyDirectory(DirAddon);
-                Directory.Delete(AddonPath, true);
+                DirectoryInfo dirAddon = new DirectoryInfo(addonPath);
+                Functions.EmptyDirectory(dirAddon);
+                Directory.Delete(addonPath, true);
             }
             Response.Redirect("~/Admin/Addons?messageId=1");
         }
     }
-    var Download = Request["download"];
-    if (!Download.IsEmpty())
+    var download = Request["download"];
+    if (!download.IsEmpty())
     {
-        var compressPath = Server.MapPath("~/Addons/" + Download +"/");
-        var outputPath = Server.MapPath("~/Uploads/" + Download + ".zip");
+        var compressPath = Server.MapPath("~/Addons/" + download +"/");
+        var outputPath = Server.MapPath("~/Uploads/" + download + ".zip");
         Compression.Compress(compressPath, outputPath);
         Response.ContentType = "application/zip";
-        Response.AppendHeader("Content-Disposition", "attachment; filename=" + Download + ".zip");
+        Response.AppendHeader("Content-Disposition", "attachment; filename=" + download + ".zip");
         Response.TransmitFile(outputPath);
         Response.Flush();
         File.Delete(outputPath);
@@ -50,10 +50,10 @@
         switch (messageId)
         {
             case "1":
-                Message = Helpers.alertSuccess("Addon Successfully Deleted!");
+                message = Helpers.AlertSuccess("Addon Successfully Deleted!");
                 break;
             default:
-                Message = Helpers.alertWarning("Unknown messageId");
+                message = Helpers.AlertWarning("Unknown messageId");
                 break;
         }
     }
@@ -64,7 +64,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(@Message)
+@Html.Raw(message)
 <div class="col-lg-12">
     <h2 class="page-header">All Addons | <a href="@Href("~/Admin/NewAddon")">Upload Addon</a></h2>
     <p>Below are a list of all the current active addons. Deleting an addon will remove all its files, settings and any pages it may be added to.</p>
@@ -93,7 +93,7 @@
                     {
                         <tr>
                             <td><a href="@Href("~/Admin/ManageAddon?addon=" + @d.Name)"><i class="glyphicon glyphicon-edit"></i></a></td>
-                            <td>@Functions.addonsMenu(d.Name)</td>
+                            <td>@Functions.AddonsMenu(d.Name)</td>
                             <td><a href="@Href("~/Admin/Addons?download=" + @d.Name)"><i class="glyphicon glyphicon-download"></i></a></td>
                             <td><a href="@Href("~/Admin/Addons?addon=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
                         </tr>

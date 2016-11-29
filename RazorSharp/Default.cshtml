@@ -7,13 +7,13 @@
         pageName = "Default";
     }
 
-    dynamic Data = null;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    dynamic data = null;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var Sqlselect = "SELECT pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pBody, pBodyFile FROM Pages WHERE pName = @0 and pHTML=1";
-        Data = Db.QuerySingle(Sqlselect, pageName);
+        var sqlselect = "SELECT pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pBody, pBodyFile FROM Pages WHERE pName = @0 and pHTML=1";
+        data = db.QuerySingle(sqlselect, pageName);
     }
-    if (Data == null)
+    if (data == null)
     {
         throw new HttpException(404, "The requested page '" + pageName + "' was not found");
     }
@@ -23,58 +23,58 @@
     }
 
     //set layout for requested page
-    Layout = "~/Layouts/"+ Data.pMasterpage;
+    Layout = "~/Layouts/"+ data.pMasterpage;
 
     //set meta tags for requested page
-    Page.mTitle = Data.mTitle;
-    Page.mKeywords = Data.mKeywords;
-    Page.mDescription = Data.mDescription;
+    Page.mTitle = data.mTitle;
+    Page.mKeywords = data.mKeywords;
+    Page.mDescription = data.mDescription;
 
-    if (Data.pBodyFile.StartsWith("addon_") && !Context.GetRouteValue("Par1").IsEmpty())
+    if (data.pBodyFile.StartsWith("addon_") && !Context.GetRouteValue("Par1").IsEmpty())
     {
         //load tags based on urldata[0]
-        dynamic Data1 = null;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        dynamic data1 = null;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var Sqlselect = "SELECT mTitle, mDescription, mKeywords FROM Pages WHERE pName = @0 and pHTML=0";
-            Data1 = Db.QuerySingle(Sqlselect, Context.GetRouteValue("Par1"));
+            var sqlselect = "SELECT mTitle, mDescription, mKeywords FROM Pages WHERE pName = @0 and pHTML=0";
+            data1 = db.QuerySingle(sqlselect, Context.GetRouteValue("Par1"));
         }
-        if (Data1 != null)
+        if (data1 != null)
         {
-            Page.mTitle = Data1.mTitle;
-            Page.mKeywords = Data1.mKeywords;
-            Page.mDescription = Data1.mDescription;
+            Page.mTitle = data1.mTitle;
+            Page.mKeywords = data1.mKeywords;
+            Page.mDescription = data1.mDescription;
         }
     }
-    dynamic Widgets = null;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    dynamic widgets = null;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
         //this will select all widgets for selected page. widgets will be loaded to sections on layout page
-        var Sqlselect = "Select PageWidget.pId, PageWidget.sName, PageWidget.wId, Widgets.wTitle, Widgets.wText, Widgets.wFile, Widgets.wName From PageWidget Inner Join Widgets On PageWidget.wId = Widgets.Id Where PageWidget.pId=@0 Order By sName, PageWidget.wOrderId Desc";
+        var sqlselect = "Select PageWidget.pId, PageWidget.sName, PageWidget.wId, Widgets.wTitle, Widgets.wText, Widgets.wFile, Widgets.wName From PageWidget Inner Join Widgets On PageWidget.wId = Widgets.Id Where PageWidget.pId=@0 Order By sName, PageWidget.wOrderId Desc";
         //query based on ID of already selected page data.pID
-        Widgets = Db.Query(Sqlselect, Data.pId);
+        widgets = db.Query(sqlselect, data.pId);
     }
 
 }
 
 @*render body*@
-@if (Data.pBody){
+@if (data.pBody){
     //standard body : _Name.cshtml
-    if (Data.pBodyFile.StartsWith("_")){
-      @RenderPage("~/Templates/Body/" + Data.pBodyFile, Data);
+    if (data.pBodyFile.StartsWith("_")){
+      @RenderPage("~/Templates/Body/" + data.pBodyFile, data);
     }
     else
     { //Addons : addon_ADDONNAME_something.cshtml
-        var addon = Data.pBodyFile.ToString().Replace("addon_", "");
+        var addon = data.pBodyFile.ToString().Replace("addon_", "");
         addon = addon.Remove(addon.IndexOf("_"));
-        @RenderPage("~/Addons/" + addon + "/Body/" + Data.pBodyFile, Data);
+        @RenderPage("~/Addons/" + addon + "/Body/" + data.pBodyFile, data);
     }
 }
 
 @*render sections: You can create as many as you need in your layout pages*@
 @{
     var sn = "";
-    foreach (var widget in Widgets) {
+    foreach (var widget in widgets) {
 
         var sectionName = (string)widget.sName;
         var wFile = (string)widget.wFile;
@@ -82,7 +82,7 @@
         {
 
             DefineSection(sectionName, () => {
-                foreach (var row in Widgets)
+                foreach (var row in widgets)
                 {
                     if (row.sName == sectionName) {
                         //standard widget : _name.cshtml

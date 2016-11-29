@@ -13,10 +13,10 @@ public sealed class ExceptionUtility
 {
     public static void LogException(Exception ex, string source)
     {
-        string logFile = "~/App_Data/ErrorLog.txt";
+        var logFile = "~/App_Data/ErrorLog.txt";
         logFile = HttpContext.Current.Server.MapPath(logFile);
 
-        StreamWriter sw = new StreamWriter(logFile, true);
+        var sw = new StreamWriter(logFile, true);
         sw.WriteLine("********** {0} **********", DateTime.Now);
         if (ex.InnerException != null)
         {
@@ -47,14 +47,14 @@ public sealed class ExceptionUtility
 
     public static void NotifyAdmin(Exception ex, string source)
     {
-        string EmailTo = ConfigurationManager.AppSettings["EmailTo"];
-        StringBuilder sb = new StringBuilder();
-        sb.Append("********** " + DateTime.Now.ToString() + " **********");
+        var emailTo = ConfigurationManager.AppSettings["EmailTo"];
+        var sb = new StringBuilder();
+        sb.Append("********** " + DateTime.Now + " **********");
         sb.AppendLine();
         if (ex.InnerException != null)
         {
             sb.Append("Inner Exception Type: ");
-            sb.Append(ex.InnerException.GetType().ToString());
+            sb.Append(ex.InnerException.GetType());
             sb.AppendLine();
             sb.Append("Inner Exception: ");
             sb.Append(ex.InnerException.Message);
@@ -70,7 +70,7 @@ public sealed class ExceptionUtility
             }
         }
         sb.Append("Exception Type: ");
-        sb.Append(ex.GetType().ToString());
+        sb.Append(ex.GetType());
         sb.AppendLine();
         sb.Append("Exception: " + ex.Message);
         sb.AppendLine();
@@ -82,13 +82,13 @@ public sealed class ExceptionUtility
             sb.Append(ex.StackTrace);
             sb.AppendLine();
         }
-        string mailBody = sb.ToString();
+        var mailBody = sb.ToString();
         WebMail.SmtpServer = ConfigurationManager.AppSettings["SMTPServer"];
         WebMail.SmtpPort = int.Parse(ConfigurationManager.AppSettings["SMTPPort"]);
         WebMail.EnableSsl = bool.Parse(ConfigurationManager.AppSettings["SMTPSSL"]);
         WebMail.UserName = ConfigurationManager.AppSettings["SMTPUser"];
         WebMail.Password = ConfigurationManager.AppSettings["SMTPPass"];
         WebMail.From = ConfigurationManager.AppSettings["SMTPUser"];
-        WebMail.Send(to: EmailTo, subject: "Website : An Error Occured!", body: mailBody, isBodyHtml: false);
+        WebMail.Send(emailTo, "Website : An Error Occured!", mailBody, isBodyHtml: false);
     }
 }

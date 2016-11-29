@@ -3,17 +3,17 @@
     Page.Title = "Admin :: Create Menu Item";
     Page.Heading = "Create Menu Item";
 
-    var Message = string.Empty;
+    var message = string.Empty;
     var mName = Request["mName"];
-    var mURL = Request["mURL"];
+    var mUrl = Request["mURL"];
     var mOrderId = Request["mOrderId"];
     var mTarget = Request["mTarget"];
     int mParentId = 0;
 
     //populate dropdowns
-    var pNames = Functions.pageNames(Request["mPage"]);
-    var pTargets = Functions.pageTarget(mTarget);
-    var pParents = Functions.pageParent(mParentId);
+    var pNames = Functions.PageNames(Request["mPage"]);
+    var pTargets = Functions.PageTarget(mTarget);
+    var pParents = Functions.PageParent(mParentId);
 
     Validation.RequireField("mName");
     Validation.RequireField("mOrderId");
@@ -25,31 +25,31 @@
         {
             //no errors = insert record
             mParentId = int.Parse(Request["mParentId"]);
-            if (mURL.IsEmpty())
+            if (mUrl.IsEmpty())
             {
-                mURL = "~/" + Request["mPage"];
-                if (mURL.ToLower() == "~/Default")
+                mUrl = "~/" + Request["mPage"];
+                if (mUrl.ToLower() == "~/Default")
                 {
-                    mURL = "~/";
+                    mUrl = "~/";
                 }
             }
             try
             {
-                using (var Db = Database.Open(Functions.GetDBName()))
+                using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var SqlInsert = "Insert Into Menu (mName, mURL, mOrderId, mTarget, mParentId) Values (@0, @1, @2, @3, @4)";
-                    Db.Execute(SqlInsert, mName, mURL, mOrderId, mTarget, mParentId);
-                    Message = Helpers.alertSuccess("User Successfully Saved!");
+                    var sqlInsert = "Insert Into Menu (mName, mURL, mOrderId, mTarget, mParentId) Values (@0, @1, @2, @3, @4)";
+                    db.Execute(sqlInsert, mName, mUrl, mOrderId, mTarget, mParentId);
+                    message = Helpers.AlertSuccess("User Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message.ToString());
             }
         }
         else
         {
-            Message = Helpers.alertDanger("Page Validation Failed, Please Complete All Required Fields!");
+            message = Helpers.AlertDanger("Page Validation Failed, Please Complete All Required Fields!");
         }
     }
 }
@@ -89,7 +89,7 @@ $(window).on('load', function() {
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form action="" method="post">
     <div class="col-lg-12">
         <h2 class="page-header"><a href="@Href("~/Admin/AllMenu")">All Menu Items</a> | Create Menu Item</h2>
@@ -114,7 +114,7 @@ $(window).on('load', function() {
             <div class="form-group">
                 @Html.Label("Or Enter URL", "mURL", new { @class = "control-label" })
                 <div class="input-group">
-                    @Html.TextBox("mURL", @mURL, new { @maxlength = "250", @class = "form-control" })
+                    @Html.TextBox("mURL", mUrl, new { @maxlength = "250", @class = "form-control" })
                     <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="Use this if you want to link to pages that are outside of your website ex.: http://www.google.com"></i></span>
                 </div>
             </div>

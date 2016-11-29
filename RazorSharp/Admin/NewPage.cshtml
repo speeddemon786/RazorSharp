@@ -12,14 +12,14 @@
     var pEditDate = DateTime.Now;
     var pBody = true;
     var pBodyFile = "";
-    var Message = string.Empty;
+    var message = string.Empty;
     var fromPage = Request["fromPage"];
     var pAuthor = User.Identity.Name;
 
     //populate dropdowns
-    var pLayouts = Functions.pageLayouts("");
-    var pBodies = Functions.pageBodies("");
-    var pNames = Functions.pageNames(fromPage);
+    var pLayouts = Functions.PageLayouts("");
+    var pBodies = Functions.PageBodies("");
+    var pNames = Functions.PageNames(fromPage);
 
     Validation.RequireField("pName");
     Validation.RequireField("pMasterPage");
@@ -31,21 +31,21 @@
     if (IsPost && Validation.IsValid())
     {
         //clean pName - it is not passed as parameter.
-        var pNameSQL = pName.ToString().Trim().Replace(" ","-");
-        pNameSQL = pNameSQL.Replace("'", "").ToLower();
+        var pNameSql = pName.ToString().Trim().Replace(" ","-");
+        pNameSql = pNameSql.Replace("'", "").ToLower();
 
         if (!fromPage.IsEmpty())
         {
-            using (var Db = Database.Open(Functions.GetDBName()))
+            using (var db = Database.Open(Functions.GetDbName()))
             {
                 //copy existing page
-                var SqlInsertPage = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, p.Author, pBody, pHTML, pBodyFile) Select '" + pNameSQL + "' As pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pHTML, pBodyFile FROM  Pages As Pages_1 Where (pName = @0)";
-                Db.Execute(SqlInsertPage, fromPage);
-                var copyId = Db.GetLastInsertId();
+                var sqlInsertPage = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, p.Author, pBody, pHTML, pBodyFile) Select '" + pNameSql + "' As pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pHTML, pBodyFile FROM  Pages As Pages_1 Where (pName = @0)";
+                db.Execute(sqlInsertPage, fromPage);
+                var copyId = db.GetLastInsertId();
 
                 //copy widget
-                var SqlInsertWidgets = "Insert Into PageWidget (sName, wOrderId, wId, pId) Select sName,WOrderId, wId, " + copyId + " From PageWidget pw Inner Join Pages p On pw.pID=p.pId Where p.pName=@0";
-                Db.Execute(SqlInsertWidgets, fromPage);
+                var sqlInsertWidgets = "Insert Into PageWidget (sName, wOrderId, wId, pId) Select sName,WOrderId, wId, " + copyId + " From PageWidget pw Inner Join Pages p On pw.pID=p.pId Where p.pName=@0";
+                db.Execute(sqlInsertWidgets, fromPage);
                 Response.Redirect("Editpage?id=" + copyId);
             }
 
@@ -54,16 +54,16 @@
         {
             try
             {
-                using (var Db = Database.Open(Functions.GetDBName()))
+                using (var db = Database.Open(Functions.GetDbName()))
                 {
                     var sqlInsert = "Insert Into Pages (pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pHTML, pBodyFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11)";
-                    Db.Execute(sqlInsert, pNameSQL, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, 1, pBodyFile);
-                    Response.Redirect("Editpage?id=" + Db.GetLastInsertId());
+                    db.Execute(sqlInsert, pNameSql, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, 1, pBodyFile);
+                    Response.Redirect("Editpage?id=" + db.GetLastInsertId());
                 }
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message.ToString());
             }
         }
     }
@@ -103,7 +103,7 @@ $(window).on('load', function() {
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" action="" role="form">
     <div class="col-lg-12">
         <h2 class="page-header"><a href="@Href("~/Admin/AllPages")">All Pages</a> | Create Page</h2>

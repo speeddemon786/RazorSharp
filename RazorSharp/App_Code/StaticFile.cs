@@ -7,17 +7,16 @@ public static class StaticFile
 {
     public static string Version(string rootRelativePath)
     {
-        if (HttpRuntime.Cache[rootRelativePath] == null)
+        if (HttpRuntime.Cache[rootRelativePath] != null) return HttpRuntime.Cache[rootRelativePath] as string;
+        var absolutePath = HostingEnvironment.MapPath(rootRelativePath);
+        if (absolutePath == null) return HttpRuntime.Cache[rootRelativePath] as string;
+        var lastChangedDateTime = File.GetLastWriteTime(absolutePath);
+        if (rootRelativePath.StartsWith("~"))
         {
-            var absolutePath = HostingEnvironment.MapPath(rootRelativePath);
-            var lastChangedDateTime = File.GetLastWriteTime(absolutePath);
-            if (rootRelativePath.StartsWith("~"))
-            {
-                rootRelativePath = rootRelativePath.Substring(1);
-            }
-            var versionedUrl = rootRelativePath + "?v=" + lastChangedDateTime.Ticks;
-            HttpRuntime.Cache.Insert(rootRelativePath, versionedUrl, new CacheDependency(absolutePath));
+            rootRelativePath = rootRelativePath.Substring(1);
         }
+        var versionedUrl = rootRelativePath + "?v=" + lastChangedDateTime.Ticks;
+        HttpRuntime.Cache.Insert(rootRelativePath, versionedUrl, new CacheDependency(absolutePath));
         return HttpRuntime.Cache[rootRelativePath] as string;
     }
 }

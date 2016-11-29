@@ -3,34 +3,34 @@
     Page.Title = "Admin :: Edit Widget";
     Page.Heading = "Edit Widget";
 
-    var Id = Request["id"];
-    var Message = string.Empty;
-    dynamic Data = null;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    var id = Request["id"];
+    var message = string.Empty;
+    dynamic data = null;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = " Select * From Widgets Where Id=@0";
-        Data = Db.QuerySingle(SqlSelect, Id);
+        var sqlSelect = " Select * From Widgets Where Id=@0";
+        data = db.QuerySingle(sqlSelect, id);
     }
-    var wName = Data.wName;
-    var wTitle = Data.wTitle;
-    var wText = Data.wText;
-    var wEditDate = Data.wEditDate;
-    var wFile = Data.wFile;
+    var wName = data.wName;
+    var wTitle = data.wTitle;
+    var wText = data.wText;
+    var wEditDate = data.wEditDate;
+    var wFile = data.wFile;
 
     //List all Layout files
-    var wLayouts = Functions.widgetLayouts(wFile);
+    var wLayouts = Functions.WidgetLayouts(wFile);
     // list all widget backups
-    var wBackups = Functions.widgetBackups(Id);
+    var wBackups = Functions.WidgetBackups(id);
 
     if (IsPost)
     {
         if (!Request["btnUpdate"].IsEmpty())
         {
             //create backup copy before update
-            using (var Db = Database.Open(Functions.GetDBName()))
+            using (var db = Database.Open(Functions.GetDbName()))
             {
-                var SqlInsert = "Insert INTO Backups (pwId, pwName, pwTitle, pwText, pwFile, pwDate, BType) Values (@0, @1, @2, @3, @4, @5,'w')";
-                Db.Execute(SqlInsert, Id, wName, wTitle, wText, wFile, wEditDate);
+                var sqlInsert = "Insert INTO Backups (pwId, pwName, pwTitle, pwText, pwFile, pwDate, BType) Values (@0, @1, @2, @3, @4, @5,'w')";
+                db.Execute(sqlInsert, id, wName, wTitle, wText, wFile, wEditDate);
             }
             //update record
             wName = Request["wName"];
@@ -40,16 +40,16 @@
             wFile = Request["wFile"];
             try
             {
-                using (var Db = Database.Open(Functions.GetDBName()))
+                using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var SqlUpdate = "Update Widgets Set wTitle=@0, wText=@1, wEditdate=@2, wFile=@3 Where Id=@4";
-                    Db.Execute(SqlUpdate, wTitle, wText, wEditDate, wFile, Id);
-                    Message = Helpers.alertSuccess("Widget Successfully Saved!");
+                    var sqlUpdate = "Update Widgets Set wTitle=@0, wText=@1, wEditdate=@2, wFile=@3 Where Id=@4";
+                    db.Execute(sqlUpdate, wTitle, wText, wEditDate, wFile, id);
+                    message = Helpers.AlertSuccess("Widget Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message.ToString());
             }
         }
         else
@@ -57,36 +57,36 @@
             //from backup - load current version selected
             if (Request["Backup"].AsInt() ==0)
             {
-                Response.Redirect("EditWidget?id=" + Id);
+                Response.Redirect("EditWidget?id=" + id);
             }
             //load from backup - post & btnUpdate is empty
-            dynamic DataFromBackup = null;
-            using (var Db = Database.Open(Functions.GetDBName()))
+            dynamic dataFromBackup = null;
+            using (var db = Database.Open(Functions.GetDbName()))
             {
-                var SqlSelect = "Select * from Backups where Id=@0";
-                DataFromBackup = Db.QuerySingle(SqlSelect, Request["Backup"]);
+                var sqlSelect = "Select * from Backups where Id=@0";
+                dataFromBackup = db.QuerySingle(sqlSelect, Request["Backup"]);
             }
-            wName = DataFromBackup.pwName;
-            wTitle = DataFromBackup.pwTitle;
-            wText = Html.Raw(DataFromBackup.pwText);
-            wEditDate = DataFromBackup.pwDate;
-            wFile = DataFromBackup.pwFile;
+            wName = dataFromBackup.pwName;
+            wTitle = dataFromBackup.pwTitle;
+            wText = Html.Raw(dataFromBackup.pwText);
+            wEditDate = dataFromBackup.pwDate;
+            wFile = dataFromBackup.pwFile;
         }
     }
     //delete old backups, we want keep only top 5 backups per page/widget
-    int NumberOfBackups = 0;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    int numberOfBackups = 0;
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlSelect = "Select Count(*) From Backups Where bType='w' And pwID=@0";
-        NumberOfBackups = (int)Db.QueryValue(SqlSelect, Id);
+        var sqlSelect = "Select Count(*) From Backups Where bType='w' And pwID=@0";
+        numberOfBackups = (int)db.QueryValue(sqlSelect, id);
     }
-    if (NumberOfBackups > 5)
+    if (numberOfBackups > 5)
     {
-        int TopRecords = NumberOfBackups - 5;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        int topRecords = numberOfBackups - 5;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlDelete = "Delete From Backups Where Id In (Select TOP " + TopRecords + " Id From Backups Where bType='w' And pwID=@0 Order By Id Asc)";
-            Db.Execute(SqlDelete, Id);
+            var sqlDelete = "Delete From Backups Where Id In (Select TOP " + topRecords + " Id From Backups Where bType='w' And pwID=@0 Order By Id Asc)";
+            db.Execute(sqlDelete, id);
         }
     }
 }
@@ -137,7 +137,7 @@ $(window).on('load', function() {
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form action="" method="post" id="editWidget">
  <div class="col-lg-12">
      <h2 class="page-header">Edit Widget | <a href="@Href("~/Admin/AllWidgets")">All Widgets</a> | <a href="@Href("~/Admin/NewWidget")">Create Widget</a> </h2>

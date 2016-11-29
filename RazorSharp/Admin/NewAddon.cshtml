@@ -3,7 +3,7 @@
     Page.Title = "Admin :: Upload Addon";
     Page.Heading = "Upload Addon";
 
-    var Message = string.Empty;
+    var message = string.Empty;
 
     if (IsPost)
     {
@@ -20,7 +20,7 @@
         }
         else
         {
-            Message = Helpers.alertWarning("Please Select An Addon To Upload");
+            message = Helpers.AlertWarning("Please Select An Addon To Upload");
         }
     }
     var messageId = Request["messageId"];
@@ -29,10 +29,10 @@
         switch (messageId)
         {
             case "1":
-                Message = Helpers.alertSuccess("Addon Successfully Uploaded, You May Need To Click 'Manage Addon' To Complete The Install!");
+                message = Helpers.AlertSuccess("Addon Successfully Uploaded, You May Need To Click 'Manage Addon' To Complete The Install!");
                 break;
             default:
-                Message = Helpers.alertWarning("Unknown messageId");
+                message = Helpers.AlertWarning("Unknown messageId");
                 break;
         }
     }
@@ -43,7 +43,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" enctype="multipart/form-data">
     <div class="col-lg-12">
         <h2 class="page-header"><a href="@Href("~/Admin/AllAddons")">All Addons</a> | Upload Addon</h2>

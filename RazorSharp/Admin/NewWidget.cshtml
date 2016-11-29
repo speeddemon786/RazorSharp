@@ -7,10 +7,10 @@
     var wText = "Text here";
     var wEditDate = DateTime.Now;
     var wFile = "";
-    var Message = string.Empty;
+    var message = string.Empty;
 
     //populate dropdowns
-    var wLayouts = Functions.widgetLayouts(wFile);
+    var wLayouts = Functions.WidgetLayouts(wFile);
 
     Validation.RequireField("wName");
     Validation.RequireField("wFile");
@@ -21,20 +21,20 @@
     if (IsPost && Validation.IsValid())
     {
         //clean wName
-        var wNameSQL = wName.ToString().Trim().Replace(" ","-");
-        wNameSQL = wNameSQL.Replace("'", "").ToLower();
+        var wNameSql = wName.ToString().Trim().Replace(" ","-");
+        wNameSql = wNameSql.Replace("'", "").ToLower();
         try
         {
-            using (var Db = Database.Open(Functions.GetDBName()))
+            using (var db = Database.Open(Functions.GetDbName()))
             {
-                var SqlInsert = "Insert Into Widgets (wName, wTitle, wText, wEditDate, wFile) Values (@0, @1, @2, @3, @4)";
-                Db.Execute(SqlInsert, wNameSQL, wTitle, wText, wEditDate, wFile);
-                Response.Redirect("EditWidget?id=" + Db.GetLastInsertId());
+                var sqlInsert = "Insert Into Widgets (wName, wTitle, wText, wEditDate, wFile) Values (@0, @1, @2, @3, @4)";
+                db.Execute(sqlInsert, wNameSql, wTitle, wText, wEditDate, wFile);
+                Response.Redirect("EditWidget?id=" + db.GetLastInsertId());
             }
         }
         catch (Exception ex)
         {
-            Message = Helpers.alertDanger(ex.Message.ToString());
+            message = Helpers.AlertDanger(ex.Message.ToString());
         }
     }
 }
@@ -73,7 +73,7 @@ $(window).on('load', function() {
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <form method="post" action="">
  <div class="col-lg-12">
         <h2 class="page-header"><a href="@Href("~/Admin/AllWidgets")">All Widgets</a> | Create Widget</h2>

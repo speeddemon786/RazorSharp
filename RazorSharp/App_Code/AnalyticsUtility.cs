@@ -15,23 +15,23 @@ public class AnalyticsUtility
 {
     public static void DeleteOldVisitors()
     {
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlDelete = "Delete From Visitors Where TimeStamp < DateAdd(dd,-30,GETDATE())";
-            Db.Execute(SqlDelete);
+            const string sqlDelete = "Delete From Visitors Where TimeStamp < DateAdd(dd,-30,GETDATE())";
+            db.Execute(sqlDelete);
         }
     }
 
-    static public string GetCountry(string IPAddress)
+    public static string GetCountry(string ipAddress)
     {
-        var country = string.Empty;
+        string country;
         using (var client = new WebClient())
         {
             client.Headers.Add("user-agent", "ASP.NET WebClient");
             client.Headers.Add("Content-Type", "application/json");
             try
             {
-                var json = client.DownloadString(string.Format("http://www.freegeoip.net/json/{0}", IPAddress));
+                var json = client.DownloadString($"http://www.freegeoip.net/json/{ipAddress}");
                 var serializer = new JavaScriptSerializer();
                 var result = serializer.Deserialize<dynamic>(json);
                 country = result["country_name"];
@@ -50,94 +50,88 @@ public class AnalyticsUtility
 
     public static void SaveVisitorInfo()
     {
-        var Context = new HttpContextWrapper(HttpContext.Current);
-        DateTime TimeStamp = DateTime.Now;
-        var Page = Context.GetRouteValue("PageName");
-        if (Page == null)
+        var context = new HttpContextWrapper(HttpContext.Current);
+        var timeStamp = DateTime.Now;
+        var page = context.GetRouteValue("PageName") ?? "Default";
+        var browser = context.Request.Browser.Browser;
+        var browserVersion = context.Request.Browser.Version;
+        var operatingsystem = context.Request.Browser.Platform;
+        var ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+        if (string.IsNullOrEmpty(ipAddress))
         {
-            Page = "Default";
+            ipAddress = context.Request.ServerVariables["REMOTE_ADDR"];
         }
-        string Browser = Context.Request.Browser.Browser;
-        string BrowserVersion = Context.Request.Browser.Version;
-        string Operatingsystem = Context.Request.Browser.Platform;
-        string IPAddress = Context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-        if (string.IsNullOrEmpty(IPAddress))
+        if (ipAddress.Contains(":") && ipAddress != "::1")
         {
-            IPAddress = Context.Request.ServerVariables["REMOTE_ADDR"];
+            var parts = ipAddress.Split(':');
+            ipAddress = parts[0];
         }
-        if (IPAddress.Contains(":") && IPAddress != "::1")
-        {
-            var parts = IPAddress.Split(':');
-            IPAddress = parts[0];
-        }
-        string Country = GetCountry(IPAddress);
-        string UserDNS = string.Empty;
+        var country = GetCountry(ipAddress);
+        string userDns;
         try
         {
-            UserDNS = Dns.GetHostEntry(IPAddress).HostName;
+            userDns = Dns.GetHostEntry(ipAddress).HostName;
         }
         catch
         {
-            UserDNS = "Unknown";
+            userDns = "Unknown";
         }
-        string PageReferer = Context.Request.ServerVariables["HTTP_REFERER"];
-        if (string.IsNullOrEmpty(PageReferer))
+        var pageReferer = context.Request.ServerVariables["HTTP_REFERER"];
+        if (string.IsNullOrEmpty(pageReferer))
         {
-            PageReferer = "Direct Link";
+            pageReferer = "Direct Link";
         }
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlInsert = "Insert Into Visitors (TimeStamp, Page, Browser, BrowserVersion, OperatingSystem, IPAddress, DNSName, Country, Referer) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8)";
-            Db.Execute(SqlInsert, TimeStamp, Page, Browser, BrowserVersion, Operatingsystem, IPAddress, UserDNS, Country, PageReferer);
+            const string sqlInsert = "Insert Into Visitors (TimeStamp, Page, Browser, BrowserVersion, OperatingSystem, IPAddress, DNSName, Country, Referer) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8)";
+            db.Execute(sqlInsert, timeStamp, page, browser, browserVersion, operatingsystem, ipAddress, userDns, country, pageReferer);
         }
     }
 
     public ChartDataList GetChartData(string chartName)
     {
-        ChartData chartData = null;
-        ChartDataList chartDataList = new ChartDataList();
-        chartDataList.ListOfChartData = new List<ChartData>();
-        Dictionary<string, int> d = new Dictionary<string, int>();
-        var SqlSelect = string.Empty;
+        var chartDataList = new ChartDataList {ListOfChartData = new List<ChartData>()};
+        var d = new Dictionary<string, int>();
         switch (chartName)
         {
             case "bar":
-                IEnumerable<dynamic> PageViews = GetPageViews();
-                foreach (var row in PageViews)
+                var pageViews = GetPageViews();
+                foreach (var row in pageViews)
                 {
                     d.Add(row.Page, row.Views);
                 }
                 break;
 
             case "donut1":
-                IEnumerable<dynamic> Browsers = GetBrowserViews();
-                foreach (var row in Browsers)
+                var browsers = GetBrowserViews();
+                foreach (var row in browsers)
                 {
                     d.Add(row.Browser, row.Views);
                 }
                 break;
 
             case "donut2":
-                IEnumerable<dynamic> OperatingSystems = GetOSViews();
-                foreach (var row in OperatingSystems)
+                var operatingSystems = GetOsViews();
+                foreach (var row in operatingSystems)
                 {
                     d.Add(row.OperatingSystem, row.Views);
                 }
                 break;
 
             case "area":
-                IEnumerable<dynamic> DailyViews = GetDailyViews();
-                foreach (var row in DailyViews)
+                var dailyViews = GetDailyViews();
+                foreach (var row in dailyViews)
                 {
                     d.Add(row.VisitDate.ToString("yyyy-MM-dd"), row.Views);
                 }
                 break;
         }
-        foreach (KeyValuePair<string, int> pair in d)
+        foreach (var chartData in d.Select(pair => new ChartData
         {
-            chartData = new ChartData();
-            chartData.label = pair.Key;
-            chartData.value = pair.Value;
+            label = pair.Key,
+            value = pair.Value
+        }))
+        {
             chartDataList.ListOfChartData.Add(chartData);
         }
         return chartDataList;
@@ -145,92 +139,92 @@ public class AnalyticsUtility
 
     public static IEnumerable<dynamic> GetPageViews()
     {
-        IEnumerable<dynamic> PageViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        IEnumerable<dynamic> pageViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Page, Count(Page) As Views From Visitors Group By Page";
-            PageViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select Page, Count(Page) As Views From Visitors Group By Page";
+            pageViews = db.Query(sqlSelect);
         }
-        return PageViews;
+        return pageViews;
     }
 
     public static IEnumerable<dynamic> GetBrowserViews()
     {
-        IEnumerable<dynamic> BrowserViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        IEnumerable<dynamic> browserViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Browser, Count(Browser) As Views From Visitors Group By Browser";
-            BrowserViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select Browser, Count(Browser) As Views From Visitors Group By Browser";
+            browserViews = db.Query(sqlSelect);
         }
-        return BrowserViews;
+        return browserViews;
     }
 
-    public static IEnumerable<dynamic> GetOSViews()
+    public static IEnumerable<dynamic> GetOsViews()
     {
-        IEnumerable<dynamic> OSViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        IEnumerable<dynamic> osViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select OperatingSystem, Count(OperatingSystem) As Views From Visitors Group By OperatingSystem";
-            OSViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select OperatingSystem, Count(OperatingSystem) As Views From Visitors Group By OperatingSystem";
+            osViews = db.Query(sqlSelect);
         }
-        return OSViews;
+        return osViews;
     }
 
     public static IEnumerable<dynamic> GetDailyViews()
     {
-        IEnumerable<dynamic> DailyViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        IEnumerable<dynamic> dailyViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select DateAdd(Day, 0, DateDiff(Day, 0, TimeStamp)) As VisitDate, Count(*) As Views From Visitors Group By DateAdd(Day, 0, DateDiff(Day, 0, TimeStamp))";
-            DailyViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select DateAdd(Day, 0, DateDiff(Day, 0, TimeStamp)) As VisitDate, Count(*) As Views From Visitors Group By DateAdd(Day, 0, DateDiff(Day, 0, TimeStamp))";
+            dailyViews = db.Query(sqlSelect);
         }
-        return DailyViews;
+        return dailyViews;
     }
 
-    public static int RecordCount(string Record)
+    public static int RecordCount(string record)
     {
-        var SqlCount = string.Empty;
-        switch (Record)
+        var sqlCount = string.Empty;
+        switch (record)
         {
             case "Browser":
-                SqlCount = "Select Count(*) From (Select Distinct Browser From Visitors) x";
+                sqlCount = "Select Count(*) From (Select Distinct Browser From Visitors) x";
                 break;
 
             case "Page":
-                SqlCount = "Select Count(*) From (Select Distinct Page From Visitors) x";
+                sqlCount = "Select Count(*) From (Select Distinct Page From Visitors) x";
                 break;
 
             case "OperatingSystem":
-                SqlCount = "Select Count(*) From (Select Distinct OperatingSystem From Visitors) x";
+                sqlCount = "Select Count(*) From (Select Distinct OperatingSystem From Visitors) x";
                 break;
 
             case "Total":
-                SqlCount = "Select Count(*) From Visitors";
+                sqlCount = "Select Count(*) From Visitors";
                 break;
 
             case "Referers":
-                SqlCount = "Select Count(*) From (Select Distinct Referer From Visitors) x";
+                sqlCount = "Select Count(*) From (Select Distinct Referer From Visitors) x";
                 break;
 
             case "Countries":
-                SqlCount = "Select Count(*) From (Select Distinct Country From Visitors) x";
+                sqlCount = "Select Count(*) From (Select Distinct Country From Visitors) x";
                 break;
         }
-        using (var Db = Database.Open(Functions.GetDBName()))
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var Count = (int)Db.QueryValue(SqlCount);
-            return Count;
+            var count = (int)db.QueryValue(sqlCount);
+            return count;
         }
     }
 
     public static string ViewsByPage()
     {
-        StringBuilder sb = new StringBuilder();
-        IEnumerable<dynamic> pageViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        var sb = new StringBuilder();
+        IEnumerable<dynamic> pageViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Top 10 Page, Count(Page) As Views From Visitors Group By Page Order By Views Desc";
-            pageViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select Top 10 Page, Count(Page) As Views From Visitors Group By Page Order By Views Desc";
+            pageViews = db.Query(sqlSelect);
         }
         sb.Append("<div class=\"list-group\">");
         foreach (var row in pageViews)
@@ -245,12 +239,12 @@ public class AnalyticsUtility
 
     public static string ViewsByReferer()
     {
-        StringBuilder sb = new StringBuilder();
-        IEnumerable<dynamic> refererViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        var sb = new StringBuilder();
+        IEnumerable<dynamic> refererViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Top 10 Referer, Count(Referer) As Views From Visitors Group By Referer Order By Views Desc";
-            refererViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select Top 10 Referer, Count(Referer) As Views From Visitors Group By Referer Order By Views Desc";
+            refererViews = db.Query(sqlSelect);
         }
         sb.Append("<div class=\"list-group\">");
         foreach (var row in refererViews)
@@ -265,12 +259,12 @@ public class AnalyticsUtility
 
     public static string ViewsByCountry()
     {
-        StringBuilder sb = new StringBuilder();
-        IEnumerable<dynamic> countryViews = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        var sb = new StringBuilder();
+        IEnumerable<dynamic> countryViews;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Top 10 Country, Count(Country) As Views From Visitors Group By Country Order By Views Desc";
-            countryViews = Db.Query(SqlSelect);
+            const string sqlSelect = "Select Top 10 Country, Count(Country) As Views From Visitors Group By Country Order By Views Desc";
+            countryViews = db.Query(sqlSelect);
         }
         sb.Append("<div class=\"list-group\">");
         foreach (var row in countryViews)

@@ -2,23 +2,23 @@
 @{
     Validation.RequireField("Username");
     Validation.RequireField("Password");
-    var Message = string.Empty;
+    var message = string.Empty;
     if (IsPost)
     {
         AntiForgery.Validate();
         if (Validation.IsValid())
         {
-            var Username = Request["Username"];
-            var Password = Request["Password"];
-            dynamic Data = null;
-            using (var Db = Database.Open(Functions.GetDBName()))
+            var username = Request["Username"];
+            var password = Request["Password"];
+            dynamic data = null;
+            using (var db = Database.Open(Functions.GetDbName()))
             {
-                var SqlSelect = "Select Id From Users Where Username=@0 And Password=@1";
-                Data = Db.QuerySingle(SqlSelect, Username, Encryption.Encrypt(Password));
+                var sqlSelect = "Select Id From Users Where Username=@0 And Password=@1";
+                data = db.QuerySingle(sqlSelect, username, Encryption.Encrypt(password));
             }
-            if (Data != null)
+            if (data != null)
             {
-                FormsAuthentication.SetAuthCookie(Username, true);
+                FormsAuthentication.SetAuthCookie(username, true);
                 if (Request.QueryString["ReturnUrl"] != null)
                 {
                     Response.Redirect(Request.QueryString["ReturnUrl"]);
@@ -30,12 +30,12 @@
             }
             else
             {
-                Message = Helpers.alertDanger("Invalid Login!");
+                message = Helpers.AlertDanger("Invalid Login!");
             }
         }
         else
         {
-            Message = Helpers.alertWarning("Please Complete All Required Fields!");
+            message = Helpers.AlertWarning("Please Complete All Required Fields!");
         }
     }
     if (Request["Action"] != null && Request["Action"] == "Logout")
@@ -94,7 +94,7 @@
             <!-- Admin Login - START -->
             <form class="col-md-4 col-md-offset-4" method="post" action="">
                 @AntiForgery.GetHtml()
-                @Html.Raw(Message)
+                @Html.Raw(message)
                 <div class="form-group">
                     @Html.Label("Username", "Username", new { @class = "control-label grey" })
                     <div class="controls">

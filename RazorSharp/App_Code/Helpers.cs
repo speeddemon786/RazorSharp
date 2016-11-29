@@ -14,20 +14,16 @@ public class Helpers
 {
     public static string Menu(string className = null, string id = null)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
-        var Context = new HttpContextWrapper(HttpContext.Current);
-        IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        var context = new HttpContextWrapper(HttpContext.Current);
+        IEnumerable<dynamic> data;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select * From Menu Order By mOrderId DESC";
-            Data = Db.Query(SqlSelect);
+            const string sqlSelect = "Select * From Menu Order By mOrderId DESC";
+            data = db.Query(sqlSelect);
         }
-        var pageName = Context.GetRouteValue("PageName");
-        if (pageName == null)
-        {
-            pageName = "default";
-        }
+        var pageName = context.GetRouteValue("PageName") ?? "default";
 
         pageName = "~/" + pageName.ToLower();
         if (pageName == "~/default")
@@ -36,7 +32,7 @@ public class Helpers
         }
 
         sb.Append("<ul class=\"" + className + "\" id=\"" + id + "\">");
-        sb.Append(BuildMenu(Data, 0, pageName));
+        sb.Append(BuildMenu(data, 0, pageName));
         sb.Append("</ul>");
 
         return sb.ToString();
@@ -45,7 +41,7 @@ public class Helpers
     public static string BuildMenu(IEnumerable<dynamic> menu, int parentid, string pageName)
     {
         var items = menu.Where(m => m.mParentId == parentid);
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         if (items.Any())
         {
@@ -60,20 +56,17 @@ public class Helpers
                 var childPage = "";
                 if (hasChilds.Any())
                 {
-                    foreach (var child in hasChilds)
+                    foreach (var child in hasChilds.Where(child => pageName == child.mURL))
                     {
-                        if (pageName == child.mURL)
-                        {
-                            pageName = item.mURL;
-                            childPage = child.mURL;
-                        }
+                        pageName = item.mURL;
+                        childPage = child.mURL;
                     }
                 }
 
-                string URL = item.mURL;
+                string url = item.mURL;
                 if (item.mURL.ToString().StartsWith("~"))
                 {
-                    URL = VirtualPathUtility.ToAbsolute(item.mURL);
+                    url = VirtualPathUtility.ToAbsolute(item.mURL);
                 }
                 sb.Append("<li");
                 if (pageName.ToLower() == item.mURL.ToLower())
@@ -81,24 +74,10 @@ public class Helpers
                     sb.Append(" class=\"active\" ");
                 }
                 sb.Append(">");
-                sb.Append("<a href=\"" + URL + "\" target=\"" + item.mTarget + "\"");
-                if (hasChilds.Any())
-                {
-                    sb.Append(" data-toggle=\"dropdown\" class=\"dropdown-toggle\" >");
-                }
-                else
-                {
-                    sb.Append(">");
-                }
+                sb.Append("<a href=\"" + url + "\" target=\"" + item.mTarget + "\"");
+                sb.Append(hasChilds.Any() ? " data-toggle=\"dropdown\" class=\"dropdown-toggle\" >" : ">");
                 sb.Append(item.mName);
-                if (hasChilds.Any())
-                {
-                    sb.Append("<span class=\"caret\"></span></a>");
-                }
-                else
-                {
-                    sb.Append("</a>");
-                }
+                sb.Append(hasChilds.Any() ? "<span class=\"caret\"></span></a>" : "</a>");
                 sb.Append(BuildMenu(menu, item.Id, childPage));
                 sb.Append("</li>");
             }
@@ -117,10 +96,7 @@ public class Helpers
         {
             return "<i class=\"glyphicon glyphicon-list-alt\" title=\"Go To Addons To Edit\"></i>";
         }
-        else
-        {
-            return "<a href = \"EditWidget?id=" + id + "\" title=\"Edit Widget\"><i class=\"glyphicon glyphicon-edit\"></i></a>";
-        }
+        return "<a href = \"EditWidget?id=" + id + "\" title=\"Edit Widget\"><i class=\"glyphicon glyphicon-edit\"></i></a>";
     }
 
     public static string DeleteWidgetImg(int id, string wFile)
@@ -129,10 +105,7 @@ public class Helpers
         {
             return "<a href = \"AllWidgets?id=" + id + "\" onclick = \"return confirm('Are You Sure You Want To Delete This Widget?')\" title = \"Delete\" ><i class=\"glyphicon glyphicon-remove\"></i></a>";
         }
-        else
-        {
-            return "";
-        }
+        return "";
     }
 
     public static string DeleteWidgetInPage(int pageId, string pageName, int id, string wFile)
@@ -145,12 +118,12 @@ public class Helpers
         return "<a href='" + VirtualPathUtility.ToAbsolute("~/Admin/Editor?fileToEdit=" + HttpContext.Current.Server.MapPath("~/Layouts/") + pMasterPage + "&pMasterPage=" + pMasterPage) + "'>" + pMasterPage + "</a>";
     }
 
-    public static string EditStyleSheetLinks(FileInfo[] fileInfoCSS, string pMasterPage)
+    public static string EditStyleSheetLinks(FileInfo[] fileInfoCss, string pMasterPage)
     {
-        StringBuilder sb = new StringBuilder();
-        if (fileInfoCSS != null)
+        var sb = new StringBuilder();
+        if (fileInfoCss != null)
         {
-            foreach (var f in fileInfoCSS)
+            foreach (var f in fileInfoCss)
             {
                 sb.Append("<a href = '" + VirtualPathUtility.ToAbsolute("~/Admin/Editor?fileToEdit=" + f.DirectoryName + "/" + f.Name + "&pMasterPage=" + pMasterPage) + "' >" + f.Name + "</a> , ");
             }
@@ -162,84 +135,84 @@ public class Helpers
         return sb.ToString();
     }
 
-    public static string RecentBackups(int Count)
+    public static string RecentBackups(int count)
     {
-        StringBuilder sb = new StringBuilder();
-        IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-        using (var Db = Database.Open(Functions.GetDBName()))
+        var sb = new StringBuilder();
+        IEnumerable<dynamic> data;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Top " + Count + " pwTitle, pwDate From Backups Order By pwDate DESC";
-            Data = Db.Query(SqlSelect);
+            var sqlSelect = "Select Top " + count + " pwTitle, pwDate From Backups Order By pwDate DESC";
+            data = db.Query(sqlSelect);
         }
         sb.Append("<ul class=\"dropdown-menu alert-dropdown\">");
-        if (Data.Count() == 0)
+        if (!data.Any())
         {
             sb.Append("<li>No Backups Found</li>");
         }
         else
         {
             sb.Append("<li class=\"text-center\"><a href=\"#\">Recent Backups</a></li>");
-            foreach (var row in Data)
+            foreach (var row in data)
             {
                 sb.Append("<li><a href=\"#\">" + Functions.GetShortString(row.pwTitle, 10) + " <span class=\"label label-primary pull-right\">" + string.Format("{0 : dd/MM/yyyy}", row.pwDate) + "</span></a></li>");
             }
         }
         sb.Append("<li class=\"divider\"></li>");
-        var BackupCount = 0;
-        using (var Db = Database.Open(Functions.GetDBName()))
+        int backupCount;
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlSelect = "Select Count(*) From Backups";
-            BackupCount = (int)Db.QueryValue(SqlSelect);
+            const string sqlSelect = "Select Count(*) From Backups";
+            backupCount = (int)db.QueryValue(sqlSelect);
         }
-        sb.Append("<li class=\"text-center\"><a href=\"#\">Total Backups : " + BackupCount.ToString() + "</a>");
+        sb.Append("<li class=\"text-center\"><a href=\"#\">Total Backups : " + backupCount + "</a>");
         sb.Append("</ul>");
         return sb.ToString();
     }
 
     public static string FooterCopyright()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("<p><span class=\"small\">Copyright &copy; " + DateTime.Now.Year + " " + HttpContext.Current.Application["SiteName"] + ".</span>");
         sb.Append("<span class=\"pull-right small\">Powered by Razor Sharp " + HttpContext.Current.Application["Version"] + ".</span></p>");
         return sb.ToString();
     }
 
-    public static string alertSuccess(string Message)
+    public static string AlertSuccess(string message)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("<div class=\"alert alert-success\">");
         sb.Append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>");
-        sb.Append("<i class=\"glyphicon glyphicon-ok-sign\"></i>  " + Message);
+        sb.Append("<i class=\"glyphicon glyphicon-ok-sign\"></i>  " + message);
         sb.Append("</div>");
         return sb.ToString();
     }
 
-    public static string alertInfo(string Message)
+    public static string AlertInfo(string message)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("<div class=\"alert alert-info\">");
         sb.Append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>");
-        sb.Append("<i class=\"glyphicon glyphicon-info-sign\"></i>  " + Message);
+        sb.Append("<i class=\"glyphicon glyphicon-info-sign\"></i>  " + message);
         sb.Append("</div>");
         return sb.ToString();
     }
 
-    public static string alertWarning(string Message)
+    public static string AlertWarning(string message)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("<div class=\"alert alert-warning\">");
         sb.Append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>");
-        sb.Append("<i class=\"glyphicon glyphicon-exclamation-sign\"></i>  " + Message);
+        sb.Append("<i class=\"glyphicon glyphicon-exclamation-sign\"></i>  " + message);
         sb.Append("</div>");
         return sb.ToString();
     }
 
-    public static string alertDanger(string Message)
+    public static string AlertDanger(string message)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("<div class=\"alert alert-danger\">");
         sb.Append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>");
-        sb.Append("<i class=\"glyphicon glyphicon-remove-circle\"></i>  " + Message);
+        sb.Append("<i class=\"glyphicon glyphicon-remove-circle\"></i>  " + message);
         sb.Append("</div>");
         return sb.ToString();
     }

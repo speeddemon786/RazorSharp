@@ -1,7 +1,7 @@
 ﻿@using System.Web.Script.Serialization;
 @{
     string chartName = Request["chart"];
-    var JsonString = string.Empty;
+    var jsonString = string.Empty;
 
     AnalyticsUtility analytics = new AnalyticsUtility();
 
@@ -12,12 +12,12 @@
 
         var jsonSerializer = new JavaScriptSerializer();
         string data = jsonSerializer.Serialize(chartList.ListOfChartData);
-        JsonString = data;
+        jsonString = data;
     }
     else
     {
-        JsonString = null;
+        jsonString = null;
     }
 
 }
-@Html.Raw(JsonString)
+@Html.Raw(jsonString)

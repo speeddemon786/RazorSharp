@@ -48,7 +48,7 @@
         }
         Server.ClearError(); //make sure customErrors doesn't take over
         Response.TrySkipIisCustomErrors = true; //don't let IIS7 take over
-        Response.Redirect(String.Format("~/Error?Error={0}", action));
+        Response.Redirect($"~/Error?Error={action}");
     }
 
     void Session_Start(object sender, EventArgs e)

@@ -3,48 +3,48 @@
 
     public static string CleanHtml(string value)
     {
-        var Step1 = Regex.Replace(value, @"<[^>]+>|&nbsp;", "").Trim();
-        var Step2 = Regex.Replace(Step1, @"\s{2,}", " ");
-        var Result = Step2.ToString();
-        return Result;
+        var step1 = Regex.Replace(value, @"<[^>]+>|&nbsp;", "").Trim();
+        var step2 = Regex.Replace(step1, @"\s{2,}", " ");
+        var result = step2.ToString();
+        return result;
     }
 }
 @{
-    var Query = Request["q"];
-    var ResultsTitle = String.Empty;
-    var PageSize = 5;
-    var TotalPages = 0;
-    var Count = 0;
-    var Page = Request["page"];
-    if (string.IsNullOrEmpty(Page))
+    var query = Request["q"];
+    var resultsTitle = String.Empty;
+    var pageSize = 5;
+    var totalPages = 0;
+    var count = 0;
+    var page = Request["page"];
+    if (string.IsNullOrEmpty(page))
     {
-        Page = "1";
+        page = "1";
     }
-    var Offset = (Page.AsInt(1) - 1) * PageSize;
-    IEnumerable<dynamic> Data = Enumerable.Empty<dynamic>();
-    if (!String.IsNullOrEmpty(Query))
+    var offset = (page.AsInt(1) - 1) * pageSize;
+    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    if (!String.IsNullOrEmpty(query))
     {
-        ResultsTitle = "Your search for \"" + Query +"\" returned the following results";
-        using (var Db = Database.Open(Functions.GetDBName()))
+        resultsTitle = "Your search for \"" + query +"\" returned the following results";
+        using (var db = Database.Open(Functions.GetDbName()))
         {
-            var SqlCount = "Select Count(*) From Pages Where pName Like @0 Or pTitle Like @0 Or pText Like @0";
-            Count = (int)Db.QueryValue(SqlCount, "%" + Query + "%");
-            TotalPages = (int)Math.Ceiling((double)Count / PageSize);
-            var SqlSelect = "Select pName, pTitle, pText From Pages Where pName Like @0 Or pTitle Like @0 Or pText Like @0 Order By pTitle Offset @1 Rows Fetch Next @2 Rows Only;";
-            Data = Db.Query(SqlSelect, "%" + Query + "%", Offset, PageSize);
+            var sqlCount = "Select Count(*) From Pages Where pName Like @0 Or pTitle Like @0 Or pText Like @0";
+            count = (int)db.QueryValue(sqlCount, "%" + query + "%");
+            totalPages = (int)Math.Ceiling((double)count / pageSize);
+            var sqlSelect = "Select pName, pTitle, pText From Pages Where pName Like @0 Or pTitle Like @0 Or pText Like @0 Order By pTitle Offset @1 Rows Fetch Next @2 Rows Only;";
+            data = db.Query(sqlSelect, "%" + query + "%", offset, pageSize);
         }
     }
     else
     {
-        ResultsTitle = "No search query received.";
+        resultsTitle = "No search query received.";
     }
 }
-<h4>@Html.Raw(ResultsTitle)</h4>
+<h4>@Html.Raw(resultsTitle)</h4>
 <!-- Search Results -->
 <ul class="list-unstyled list-results">
-    @if (Data.Count() > 0)
+    @if (data.Count() > 0)
     {
-        foreach (var row in Data)
+        foreach (var row in data)
         {
             <li class="type-page">
                 <h4><a href="@Href("~/" + @row.pName)">@row.pTitle</a></h4>
@@ -68,23 +68,23 @@
         </li>
     }
 </ul>
-<p>Page @Page of @TotalPages</p>
+<p>Page @page of @totalPages</p>
 <!-- End Search Results -->
 <!-- Pagination -->
 <div class="text-left">
     <ul class="pagination">
         @{
             <li>
-                <a href="@Href("~/Results?page=1&q=" + Query)"><i class="glyphicon glyphicon-chevron-left"></i></a>
+                <a href="@Href("~/Results?page=1&q=" + query)"><i class="glyphicon glyphicon-chevron-left"></i></a>
             </li>
-            for (var i = 1; i <= TotalPages + 1; i++)
+            for (var i = 1; i <= totalPages + 1; i++)
             {
-               <li @if(Page.AsInt(1) == i) { <text>class="active"</text> }>
-                  <a href="@Href("~/Results?page=" + i + "&q=" + Query)">@i</a>
+               <li @if(page.AsInt(1) == i) { <text>class="active"</text> }>
+                  <a href="@Href("~/Results?page=" + i + "&q=" + query)">@i</a>
                </li>
             }
             <li>
-                <a href="@Href("~/Results?page=" + TotalPages + "&q=" + Query)"><i class="glyphicon glyphicon-chevron-right"></i></a>
+                <a href="@Href("~/Results?page=" + totalPages + "&q=" + query)"><i class="glyphicon glyphicon-chevron-right"></i></a>
             </li>
 
         }

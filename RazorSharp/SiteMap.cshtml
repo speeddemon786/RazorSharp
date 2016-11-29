@@ -1,17 +1,22 @@
 ﻿@using System.Xml.Linq;
 @{
-    var urls = Functions.menuItems();
+    var urls = Functions.MenuItems();
     XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
     var baseurl = Request.Url.GetLeftPart(UriPartial.Authority) + "/{0}";
     var sitemap = new XDocument(
         new XDeclaration("1.0", "utf-8", "yes"),
             new XElement(ns + "urlset",
-                from url in urls select
-                    new XElement("url",
-                    new XElement("loc", string.Format(baseurl, url)),
-                    new XElement("lastmod", String.Format("{0:yyyy-MM-dd}", DateTime.Now)),
-                    new XElement("changefreq", "monthly"),
-                    new XElement("priority", "0.5")
+             new XAttribute("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9"),
+             new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+             new XAttribute(xsi + "schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"),
+                from url in urls
+                select
+                    new XElement(ns + "url",
+                    new XElement(ns + "loc", string.Format(baseurl, url)),
+                    new XElement(ns + "lastmod", String.Format("{0:yyyy-MM-dd}", DateTime.Now)),
+                    new XElement(ns + "changefreq", "monthly"),
+                    new XElement(ns + "priority", "0.5")
                     )
                 )
             );

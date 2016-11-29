@@ -1,6 +1,6 @@
 ﻿@{
     var isActive = true;
-    var Message = string.Empty;
+    var message = string.Empty;
     Validation.RequireField("Name");
     Validation.RequireField("Email");
     Validation.RequireField("Phone");
@@ -9,10 +9,10 @@
 
     if (IsPost)
     {
-        var Name = Request.Form["Name"];
-        var Email = Request.Form["Email"];
-        var Phone = Request.Form["Phone"];
-        var Enquiry = Request.Form["Enquiry"];
+        var name = Request.Form["Name"];
+        var email = Request.Form["Email"];
+        var phone = Request.Form["Phone"];
+        var enquiry = Request.Form["Enquiry"];
 
         if (Validation.IsValid())
         {
@@ -34,17 +34,17 @@
 
                 // Send email
                 WebMail.Send(to: App.SmtpTo, subject: "E-mail from website : " + App.SiteName, body: mailBody);
-                Message = Helpers.alertSuccess("Message Successfully Sent!");
+                message = Helpers.AlertSuccess("Message Successfully Sent!");
                 isActive = false;
             }
             catch (Exception ex)
             {
-                Message = Helpers.alertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message.ToString());
             }
         }
         else
         {
-            Message = Helpers.alertWarning("Please Complete All Required Fields!");
+            message = Helpers.AlertWarning("Please Complete All Required Fields!");
         }
     }
 }
@@ -52,7 +52,7 @@
     @AntiForgery.GetHtml()
     <div class="col-lg-8">
         <h3>Contact Form</h3>
-        @Html.Raw(Message)
+        @Html.Raw(message)
         <div class="form-group">
             @Html.Label("Your Name", "Name", new { @class = "control-label" })
             <div class="controls">

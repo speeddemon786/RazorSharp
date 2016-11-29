@@ -1,19 +1,19 @@
 ﻿@{
     Page.Title = "Admin :: Dashboard";
     Page.Heading = "Dashboard";
-    var Message = Helpers.alertInfo("Welcome back " + User.Identity.Name + ". Please note all visitor history is only stored for 30 days. Should you require more detailed data then click <a href='" + @Href("~/Admin/SiteSettings") + "'>here</a> to add you own tracking code.");
+    var message = Helpers.AlertInfo("Welcome back " + User.Identity.Name + ". Please note all visitor history is only stored for 30 days. Should you require more detailed data then click <a href='" + @Href("~/Admin/SiteSettings") + "'>here</a> to add you own tracking code.");
     int pageCount = 0;
     int widgetCount = 0;
     int menuCount = 0;
     int addonCount = 0;
-    using (var Db = Database.Open(Functions.GetDBName()))
+    using (var db = Database.Open(Functions.GetDbName()))
     {
-        var SqlPageCount = "Select Count(*) From Pages";
-        pageCount = (int)Db.QueryValue(SqlPageCount);
-        var SqlWidgetCount = "Select Count(*) From Widgets";
-        widgetCount = (int)Db.QueryValue(SqlWidgetCount);
-        var SqlMenuCount = "Select Count(*) From Menu";
-        menuCount = (int)Db.QueryValue(SqlMenuCount);
+        var sqlPageCount = "Select Count(*) From Pages";
+        pageCount = (int)db.QueryValue(sqlPageCount);
+        var sqlWidgetCount = "Select Count(*) From Widgets";
+        widgetCount = (int)db.QueryValue(sqlWidgetCount);
+        var sqlMenuCount = "Select Count(*) From Menu";
+        menuCount = (int)db.QueryValue(sqlMenuCount);
     }
     DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
     addonCount = dirInfo.EnumerateDirectories().Count();
@@ -33,7 +33,7 @@
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
-@Html.Raw(Message)
+@Html.Raw(message)
 <div class="row">
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-primary">
