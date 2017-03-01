@@ -5,7 +5,7 @@
     App.SiteName = Settings.GetSetting("siteName");
     App.SiteAnalytics = Settings.GetSetting("siteAnalytics");
     App.SmtpServer = Settings.GetSetting("smtpServer");
-    App.SmtpPort = Settings.GetSetting("smtpPort");
+    App.SmtpPort = Convert.ToInt32(Settings.GetSetting("smtpPort"));
     App.EnableSsl = Convert.ToBoolean(Settings.GetSetting("smtpSSL"));
     App.UserName = Settings.GetSetting("smtpUser");
     App.Password = Settings.GetSetting("smtpPass");
