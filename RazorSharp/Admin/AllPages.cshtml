@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: All Pages";
     Page.Heading = "All Pages";
     var message = string.Empty;
@@ -10,7 +9,7 @@
     {
         using (var db = Database.Open(Functions.GetDbName()))
         {
-            var sqlDelete = "Delete From Pages Where pId=@0";
+            const string sqlDelete = "Delete From Pages Where pId=@0";
             db.Execute(sqlDelete, deleteId);
             Response.Redirect("~/Admin/AllPages?messageId=1");
         }
@@ -29,11 +28,10 @@
                 break;
         }
     }
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    IEnumerable<dynamic> data;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-
-        var sqlSelect = "Select pId, pName, pEditDate From Pages Where pHTML=1 Order By pEditDate Desc";
+        const string sqlSelect = "Select pId, pName, pEditDate From Pages Where pHTML=1 Order By pEditDate Desc";
         data = db.Query(sqlSelect);
     }
     var grid = new WebGrid(source: data, rowsPerPage: 10);

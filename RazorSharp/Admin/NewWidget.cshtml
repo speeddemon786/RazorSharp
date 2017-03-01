@@ -1,27 +1,24 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Create Widget";
     Page.Heading = "Create Widget";
-    var wName = "";
     var wTitle = "Title Here";
     var wText = "Text here";
     var wEditDate = DateTime.Now;
-    var wFile = "";
     var message = string.Empty;
-
-    //populate dropdowns
-    var wLayouts = Functions.WidgetLayouts(wFile);
 
     Validation.RequireField("wName");
     Validation.RequireField("wFile");
 
-    wName = Request["wName"];
-    wFile = Request["wFile"];
+    var wName = Request["wName"];
+    var wFile = Request["wFile"];
+
+    //populate dropdowns
+    var wLayouts = Functions.WidgetLayouts(wFile);
 
     if (IsPost && Validation.IsValid())
     {
         //clean wName
-        var wNameSql = wName.ToString().Trim().Replace(" ","-");
+        var wNameSql = wName.Trim().Replace(" ","-");
         wNameSql = wNameSql.Replace("'", "").ToLower();
         try
         {
@@ -34,7 +31,7 @@
         }
         catch (Exception ex)
         {
-            message = Helpers.AlertDanger(ex.Message.ToString());
+            message = Helpers.AlertDanger(ex.Message);
         }
     }
 }

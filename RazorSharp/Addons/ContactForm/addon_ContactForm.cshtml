@@ -20,7 +20,7 @@
             var mailBody = "";
             foreach (var item in Request.Form)
             {
-                mailBody += item.ToString() + " : " + Request[item.ToString()] + "<br />";
+                mailBody += item + " : " + Request[item.ToString()] + "<br />";
             }
             try
             {
@@ -39,7 +39,7 @@
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else

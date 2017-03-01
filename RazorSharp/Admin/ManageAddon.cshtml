@@ -1,7 +1,6 @@
 ﻿@{
     Page.Title = "Manage Addon";
     Page.Heading = "Manage Addon";
-    var message = string.Empty;
     var addon = Request["addon"];
     var addonPath = "~/Addons/" + addon + "/Default.cshtml";
     var mappedPath = Server.MapPath(addonPath);

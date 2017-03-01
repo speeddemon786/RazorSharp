@@ -1,11 +1,10 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Layout = "~/Admin/_Layout.cshtml";
     Page.Title = "Contact Form - Install";
     Page.Heading = "Installing...";
     var message = string.Empty;
 
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    var data = Enumerable.Empty<dynamic>();
     using (var db = Database.Open(Functions.GetDbName()))
     {
         var sqlSelect = "Select * From Widgets Where wName = 'contact-form'";

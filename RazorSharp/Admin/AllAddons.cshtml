@@ -3,8 +3,8 @@
     Page.Heading = "All Addons";
     var message = string.Empty;
 
-    DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
-    DirectoryInfo[] listAddons = dirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly);
+    var dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
+    var listAddons = dirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly);
     var addon = Request["addon"];
     if (!addon.IsEmpty())
     {
@@ -18,17 +18,17 @@
                 wId = "0";
             }
             // Delete Widget
-            var sqlDelete = "Delete From Widgets Where Id=@0";
+            const string sqlDelete = "Delete From Widgets Where Id=@0";
             db.Execute(sqlDelete, wId);
             // Delete Addon Files
             var addonPath = Server.MapPath("~/Addons/" + addon);
             if (Directory.Exists(addonPath))
             {
-                DirectoryInfo dirAddon = new DirectoryInfo(addonPath);
-                Functions.EmptyDirectory(dirAddon);
+                var dirAddon = new DirectoryInfo(addonPath);
+                dirAddon.EmptyDirectory();
                 Directory.Delete(addonPath, true);
             }
-            Response.Redirect("~/Admin/Addons?messageId=1");
+            Response.Redirect("~/Admin/AllAddons?messageId=1");
         }
     }
     var download = Request["download"];
@@ -94,8 +94,8 @@
                         <tr>
                             <td><a href="@Href("~/Admin/ManageAddon?addon=" + @d.Name)"><i class="glyphicon glyphicon-edit"></i></a></td>
                             <td>@Functions.AddonsMenu(d.Name)</td>
-                            <td><a href="@Href("~/Admin/Addons?download=" + @d.Name)"><i class="glyphicon glyphicon-download"></i></a></td>
-                            <td><a href="@Href("~/Admin/Addons?addon=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
+                            <td><a href="@Href("~/Admin/AllAddons?download=" + @d.Name)"><i class="glyphicon glyphicon-download"></i></a></td>
+                            <td><a href="@Href("~/Admin/AllAddons?addon=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
                         </tr>
                     }
                 }
