@@ -57,7 +57,7 @@
                         <a href="@Href("~/Admin/ChangeOrderId?tn=menu&cv=-1&id=" + item.Id)" title="Down"><i class="glyphicon glyphicon-arrow-down" style="margin-right:10px"></i></a>@item.mOrderId
                     </span>),
                     grid.Column("mTarget", "Target"),
-                    grid.Column("Delete", format:@<a href="@Href("~/Admin/Menu?id=" + item.Id)" onclick="return confirm('Are You Sure You Want To Delete This Menu Item?')" title="Delete"><i class="glyphicon glyphicon-remove" alt="Delete"></i></a>)
+                    grid.Column("Delete", format:@<a href="@Href("~/Admin/AllMenu?id=" + item.Id)" onclick="return confirm('Are You Sure You Want To Delete This Menu Item?')" title="Delete"><i class="glyphicon glyphicon-remove" alt="Delete"></i></a>)
                 )
     )
         <div class="col-sm-6">
