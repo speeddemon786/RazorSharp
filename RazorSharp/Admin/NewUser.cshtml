@@ -1,16 +1,11 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Create User";
     Page.Heading = "Create User";
     var userName = Request["UserName"];
     var password = Request["Password"];
     var displayName = Request["DisplayName"];
     var email = Request["Email"];
-    var isActive = false;
-    if (Request["IsActive"] == "on")
-    {
-        isActive = true;
-    }
+    var isActive = Request["IsActive"] == "on";
     var dateCreated = DateTime.Now;
     var message = string.Empty;
 
@@ -29,7 +24,7 @@
                 {
                     using (var db = Database.Open(Functions.GetDbName()))
                     {
-                        var sqlInsert = "Insert Into Users (UserName, Password, DisplayName, Email, IsActive, DateCreated) Values (@0, @1, @2, @3, @4, @5)";
+                        const string sqlInsert = "Insert Into Users (UserName, Password, DisplayName, Email, IsActive, DateCreated) Values (@0, @1, @2, @3, @4, @5)";
                         db.Execute(sqlInsert, userName, Encryption.Encrypt(password), displayName, email, isActive, dateCreated);
                         message = Helpers.AlertSuccess("User Successfully Saved!");
                     }
@@ -42,7 +37,7 @@
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else
@@ -52,7 +47,7 @@
     }
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
     $(window).on('load', function() {
         $('form').validate({
             rules: {

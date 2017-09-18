@@ -1,8 +1,7 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     var message = string.Empty;
 
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    var data = Enumerable.Empty<dynamic>();
     var sqlSelect = string.Empty;
     using (var db = Database.Open(Functions.GetDbName()))
     {

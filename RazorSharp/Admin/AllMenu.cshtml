@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: All Menu Items";
     Page.Heading = "All Menu Items";
     var message = string.Empty;
@@ -10,7 +9,7 @@
     {
         using (var db = Database.Open(Functions.GetDbName()))
         {
-            var sqlDelete = "Delete From Menu Where Id=@0";
+            const string sqlDelete = "Delete From Menu Where Id=@0";
             db.Execute(sqlDelete, deleteId);
             Response.Redirect("~/Admin/AllMenu?messageId=1");
         }
@@ -29,10 +28,10 @@
                 break;
         }
     }
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    var data = Enumerable.Empty<dynamic>();
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = "Select * From Menu Order By mOrderId Desc";
+        const string sqlSelect = "Select * From Menu Order By mOrderId Desc";
         data = db.Query(sqlSelect);
     }
     var grid = new WebGrid(data);

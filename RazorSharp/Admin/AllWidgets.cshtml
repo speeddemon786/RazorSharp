@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: All Widgets";
     Page.Heading = "All Widgets";
     var message = string.Empty;
@@ -10,7 +9,7 @@
     {
         using (var db = Database.Open(Functions.GetDbName()))
         {
-            var sqlDelete = "Delete From Widgets Where Id=@0";
+            const string sqlDelete = "Delete From Widgets Where Id=@0";
             db.Execute(sqlDelete, deleteId);
             Response.Redirect("~/Admin/AllWidgets?messageId=1");
         }
@@ -29,10 +28,10 @@
                 break;
         }
     }
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    IEnumerable<dynamic> data;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = "Select Id, wName, wEditDate, wFile From Widgets Order By wEditDate DESC";
+        const string sqlSelect = "Select Id, wName, wEditDate, wFile From Widgets Order By wEditDate DESC";
         data = db.Query(sqlSelect);
     }
     var grid = new WebGrid(source: data, rowsPerPage: 10);

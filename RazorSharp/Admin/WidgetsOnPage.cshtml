@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     var pageId = Request["pId"];
     var pageName = Request["pName"];
 
@@ -36,7 +35,7 @@
     {
         using (var db = Database.Open(Functions.GetDbName()))
         {
-            var sqlDelete = "Delete From PageWidget Where Id=@0";
+            const string sqlDelete = "Delete From PageWidget Where Id=@0";
             db.Execute(sqlDelete, deleteId);
             Response.Redirect("~/Admin/WidgetsOnPage?pId=" + pageId + "&pName=" + pageName + "&messageId=1");
         }
@@ -63,14 +62,14 @@
             {
                 using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var sqlInsert = "Insert Into PageWidget (wId, sName, wOrderId, pId) Values (@0, @1, @2, @3)";
+                    const string sqlInsert = "Insert Into PageWidget (wId, sName, wOrderId, pId) Values (@0, @1, @2, @3)";
                     db.Execute(sqlInsert, wId, sName, wOrderId, pageId);
                     Response.Redirect("WidgetsOnPage?pId=" + pageId + "&pName=" + pageName + "&messageId=2");
                 }
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
     }

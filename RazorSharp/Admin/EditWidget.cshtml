@@ -1,14 +1,13 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Edit Widget";
     Page.Heading = "Edit Widget";
 
     var id = Request["id"];
     var message = string.Empty;
-    dynamic data = null;
+    dynamic data;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = " Select * From Widgets Where Id=@0";
+        const string sqlSelect = " Select * From Widgets Where Id=@0";
         data = db.QuerySingle(sqlSelect, id);
     }
     var wName = data.wName;
@@ -29,7 +28,7 @@
             //create backup copy before update
             using (var db = Database.Open(Functions.GetDbName()))
             {
-                var sqlInsert = "Insert INTO Backups (pwId, pwName, pwTitle, pwText, pwFile, pwDate, BType) Values (@0, @1, @2, @3, @4, @5,'w')";
+                const string sqlInsert = "Insert INTO Backups (pwId, pwName, pwTitle, pwText, pwFile, pwDate, BType) Values (@0, @1, @2, @3, @4, @5,'w')";
                 db.Execute(sqlInsert, id, wName, wTitle, wText, wFile, wEditDate);
             }
             //update record
@@ -42,14 +41,14 @@
             {
                 using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var sqlUpdate = "Update Widgets Set wTitle=@0, wText=@1, wEditdate=@2, wFile=@3 Where Id=@4";
+                    const string sqlUpdate = "Update Widgets Set wTitle=@0, wText=@1, wEditdate=@2, wFile=@3 Where Id=@4";
                     db.Execute(sqlUpdate, wTitle, wText, wEditDate, wFile, id);
                     message = Helpers.AlertSuccess("Widget Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else
@@ -63,7 +62,7 @@
             dynamic dataFromBackup = null;
             using (var db = Database.Open(Functions.GetDbName()))
             {
-                var sqlSelect = "Select * from Backups where Id=@0";
+                const string sqlSelect = "Select * from Backups where Id=@0";
                 dataFromBackup = db.QuerySingle(sqlSelect, Request["Backup"]);
             }
             wName = dataFromBackup.pwName;
@@ -74,15 +73,15 @@
         }
     }
     //delete old backups, we want keep only top 5 backups per page/widget
-    int numberOfBackups = 0;
+    var numberOfBackups = 0;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = "Select Count(*) From Backups Where bType='w' And pwID=@0";
+        const string sqlSelect = "Select Count(*) From Backups Where bType='w' And pwID=@0";
         numberOfBackups = (int)db.QueryValue(sqlSelect, id);
     }
     if (numberOfBackups > 5)
     {
-        int topRecords = numberOfBackups - 5;
+        var topRecords = numberOfBackups - 5;
         using (var db = Database.Open(Functions.GetDbName()))
         {
             var sqlDelete = "Delete From Backups Where Id In (Select TOP " + topRecords + " Id From Backups Where bType='w' And pwID=@0 Order By Id Asc)";
@@ -91,7 +90,7 @@
     }
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
     $(function(){
         $('#wText').summernote({ height: 400 });
     });

@@ -1,14 +1,13 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Edit User";
     Page.Heading = "Edit User";
 
     var id = Request["id"];
     var message = string.Empty;
-    dynamic data = null;
+    dynamic data;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = " Select * From Users Where Id=@0";
+        const string sqlSelect = " Select * From Users Where Id=@0";
         data = db.QuerySingle(sqlSelect, id);
     }
     var userName = data.UserName;
@@ -34,14 +33,14 @@
             {
                 using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var sqlUpdate = "Update Users Set UserName=@0, Password=@1, DisplayName=@2, Email=@3, IsActive=@4 Where Id=@5";
+                    const string sqlUpdate = "Update Users Set UserName=@0, Password=@1, DisplayName=@2, Email=@3, IsActive=@4 Where Id=@5";
                     db.Execute(sqlUpdate, userName, Encryption.Encrypt(password), displayName, email, isActive, id);
                     message = Helpers.AlertSuccess("User Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else
@@ -51,7 +50,7 @@
     }
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
     $(window).on('load', function() {
         $('form').validate({
             rules: {

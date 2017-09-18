@@ -5,7 +5,7 @@
     {
         var step1 = Regex.Replace(value, @"<[^>]+>|&nbsp;", "").Trim();
         var step2 = Regex.Replace(step1, @"\s{2,}", " ");
-        var result = step2.ToString();
+        var result = step2;
         return result;
     }
 }
@@ -21,7 +21,7 @@
         page = "1";
     }
     var offset = (page.AsInt(1) - 1) * pageSize;
-    IEnumerable<dynamic> data = Enumerable.Empty<dynamic>();
+    var data = Enumerable.Empty<dynamic>();
     if (!String.IsNullOrEmpty(query))
     {
         resultsTitle = "Your search for \"" + query +"\" returned the following results";

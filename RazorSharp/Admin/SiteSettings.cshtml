@@ -6,7 +6,7 @@
     var siteAnalytics = Request.Unvalidated("siteAnalytics");
     var smtpServer = Request["smtpServer"];
     var smtpPort = Request["smtpPort"];
-    bool smtpSsl = Request["smtpSSL"].AsBool();
+    var smtpSsl = Request["smtpSSL"].AsBool();
     var smtpUser = Request["smtpUser"];
     var smtpPass= Request["smtpPwd"];
     var smtpFrom = Request["smtpFrom"];
@@ -55,7 +55,7 @@
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
     }
@@ -76,7 +76,7 @@
     var emailSsl = Functions.EmailSsl(smtpSsl);
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
 $(window).on('load', function() {
     $('form').validate({
         rules: {

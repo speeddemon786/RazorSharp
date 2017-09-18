@@ -8,13 +8,13 @@
     var message = string.Empty;
 
     //List all Layout files
-    DirectoryInfo dirInfo = new DirectoryInfo(Server.MapPath("~/Layouts"));
-    FileInfo[] fileInfo = dirInfo.GetFiles("_*.cshtml", SearchOption.TopDirectoryOnly);
+    var dirInfo = new DirectoryInfo(Server.MapPath("~/Layouts"));
+    var fileInfo = dirInfo.GetFiles("_*.cshtml", SearchOption.TopDirectoryOnly);
     var pLayouts = Functions.PageLayouts("");
 
     if (pMasterPage.IsEmpty())
     {
-        pMasterPage = fileInfo[0].Name.ToString();
+        pMasterPage = fileInfo[0].Name;
     }
 
     //List all css files for selected layout
@@ -22,12 +22,12 @@
     //some layout files may not have unique folders with the files
     try
     {
-        DirectoryInfo dirInfoCss = new DirectoryInfo(Server.MapPath("~/Layouts/" + Functions.CleanNames(pMasterPage)));
+        var dirInfoCss = new DirectoryInfo(Server.MapPath("~/Layouts/" + Functions.CleanNames(pMasterPage)));
         fileInfoCss = dirInfoCss.GetFiles("*.css", SearchOption.AllDirectories);
     }
     catch (Exception ex)
     {
-        message = Helpers.AlertDanger(ex.Message.ToString());
+        message = Helpers.AlertDanger(ex.Message);
     }
 
     if (IsPost)
@@ -42,7 +42,7 @@
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
     }
@@ -50,7 +50,7 @@
     {
         if (!fileToEdit.IsEmpty() && fileToEdit.Contains("Layouts"))
         {
-            fileContent = System.IO.File.ReadAllText(fileToEdit);
+            fileContent = File.ReadAllText(fileToEdit);
         }
     }
 }

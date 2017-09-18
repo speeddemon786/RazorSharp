@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Edit Page";
     Page.Heading = "Edit Page";
 
@@ -8,7 +7,7 @@
     dynamic data = null;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = " Select * From Pages Where pId=@0";
+        const string sqlSelect = " Select * From Pages Where pId=@0";
         data = db.QuerySingle(sqlSelect, pId);
     }
     var pName = data.pName;
@@ -35,7 +34,7 @@
             //create backup copy before update
             using (var db = Database.Open(Functions.GetDbName()))
             {
-                var sqlInsert = "Insert Into Backups (pwId, pwName, pwTitle, pwText, mTitle, mDescription, mKeywords, pMasterPage, pwDate, pAuthor, pBody, BType, pwFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)";
+                const string sqlInsert = "Insert Into Backups (pwId, pwName, pwTitle, pwText, mTitle, mDescription, mKeywords, pMasterPage, pwDate, pAuthor, pBody, BType, pwFile) Values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12)";
                 db.Execute(sqlInsert, pId, pName, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, 'p', pBodyFile);
             }
             //update record
@@ -58,14 +57,14 @@
             {
                 using (var db = Database.Open(Functions.GetDbName()))
                 {
-                    var sqlUpdate = "Update Pages Set pTitle=@0, pText=@1, mTitle=@2, mDescription=@3, mKeywords=@4, pMasterPage=@5, pEditdate=@6, pAuthor=@7, pBody=@8, pBodyFile=@9 Where pId=@10";
+                    const string sqlUpdate = "Update Pages Set pTitle=@0, pText=@1, mTitle=@2, mDescription=@3, mKeywords=@4, pMasterPage=@5, pEditdate=@6, pAuthor=@7, pBody=@8, pBodyFile=@9 Where pId=@10";
                     db.Execute(sqlUpdate, pTitle, pText, mTitle, mDescription, mKeywords, pMasterPage, pEditDate, pAuthor, pBody, pBodyFile, pId);
                     message = Helpers.AlertSuccess("Page Successfully Saved!");
                 }
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else         {
@@ -94,15 +93,15 @@
         }
     }
     //delete old backups, we want keep only top 5 backups per page/widget
-    int numberOfBackups = 0;
+    var numberOfBackups = 0;
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = "Select Count(*) From Backups Where bType='p' And pwID=@0";
+        const string sqlSelect = "Select Count(*) From Backups Where bType='p' And pwID=@0";
         numberOfBackups = (int)db.QueryValue(sqlSelect, pId);
     }
     if (numberOfBackups > 5)
     {
-        int topRecords = numberOfBackups - 5;
+        var topRecords = numberOfBackups - 5;
         using (var db = Database.Open(Functions.GetDbName()))
         {
             var sqlDelete = "Delete From Backups Where Id In (Select Top " + topRecords + " Id From Backups Where bType='p' And pwID=@0 Order By Id Asc)";
@@ -111,7 +110,7 @@
     }
 }
 @section scripts {
-<script type='text/javascript'>
+<script type="text/javascript">
     $(function(){
         $('#pText').summernote({ height: 400 });
     });

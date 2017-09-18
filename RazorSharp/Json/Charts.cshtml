@@ -1,17 +1,17 @@
 ﻿@using System.Web.Script.Serialization;
 @{
-    string chartName = Request["chart"];
+    var chartName = Request["chart"];
     var jsonString = string.Empty;
 
-    AnalyticsUtility analytics = new AnalyticsUtility();
+    var analytics = new AnalyticsUtility();
 
     if (!string.IsNullOrEmpty(chartName))
     {
-        ChartDataList chartList = new ChartDataList();
+        var chartList = new ChartDataList();
         chartList = analytics.GetChartData(chartName);
 
         var jsonSerializer = new JavaScriptSerializer();
-        string data = jsonSerializer.Serialize(chartList.ListOfChartData);
+        var data = jsonSerializer.Serialize(chartList.ListOfChartData);
         jsonString = data;
     }
     else

@@ -1,5 +1,4 @@
-﻿@using WebMatrix.Data;
-@{
+﻿@{
     Page.Title = "Admin :: Create Menu Item";
     Page.Heading = "Create Menu Item";
 
@@ -8,7 +7,7 @@
     var mUrl = Request["mURL"];
     var mOrderId = Request["mOrderId"];
     var mTarget = Request["mTarget"];
-    int mParentId = 0;
+    var mParentId = 0;
 
     //populate dropdowns
     var pNames = Functions.PageNames(Request["mPage"]);
@@ -44,7 +43,7 @@
             }
             catch (Exception ex)
             {
-                message = Helpers.AlertDanger(ex.Message.ToString());
+                message = Helpers.AlertDanger(ex.Message);
             }
         }
         else
@@ -54,7 +53,7 @@
     }
 }
 @section Scripts{
-<script type='text/javascript'>
+<script type="text/javascript">
 $(window).on('load', function() {
     $('form').validate({
         rules: {
