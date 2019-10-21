@@ -1,0 +1,42 @@
+﻿@{
+    //delete gallery if id is passed as querystring
+    var deleteId = Request["id"];
+    var deleteImg = Request["img"];
+
+    // Here we are deleting just one image
+    if(!deleteId.IsEmpty() && !deleteImg.IsEmpty())
+    {
+        var path = Server.MapPath("~/Uploads/Gallery/" + deleteId + "/" + deleteImg);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+        var thumbPath = Server.MapPath("~/Uploads/Gallery/" + deleteId + "/thumb_" + deleteImg);
+        if (File.Exists(thumbPath))
+        {
+            File.Delete(thumbPath);
+        }
+        Response.Redirect("~/Admin/ManageAddon?addon=Gallery&action=Edit&id=" + deleteId);
+    }
+
+    // Here we are deleteing a gallery
+    if (!deleteId.IsEmpty() && deleteImg.IsEmpty())
+    {
+        // Delete gallery from db
+        using (var db = Database.Open(Functions.GetDbName()))
+        {
+            const string sqlDelete = "Delete From Gallery Where gId=@0";
+            db.Execute(sqlDelete, deleteId);
+        }
+        // Delete gallery directory
+        var galleryPath = Server.MapPath("~/Uploads/Gallery/" + deleteId + "/");
+        if (Directory.Exists(galleryPath))
+        {
+            var dirAddon = new DirectoryInfo(galleryPath);
+            dirAddon.EmptyDirectory();
+            Directory.Delete(galleryPath, true);
+        }
+        Response.Redirect("~/Admin/ManageAddon?addon=Gallery&action=Default&messageId=3");
+    }
+    Response.Redirect("~/Admin/ManageAddon?addon=Gallery&action=Default&messageId=4");
+}

@@ -2,11 +2,17 @@
     Page.Title = "Manage Addon";
     Page.Heading = "Manage Addon";
     var addon = Request["addon"];
-    var addonPath = "~/Addons/" + addon + "/Default.cshtml";
+    var action = Request["action"];
+    var addonPath = string.Empty;
+    if (string.IsNullOrEmpty(action))
+    {
+        addonPath = "~/Addons/" + addon + "/Default.cshtml";
+    }
+    else
+    {
+        addonPath = "~/Addons/" + addon + "/" + action + ".cshtml";
+    }
     var mappedPath = Server.MapPath(addonPath);
-}
-@section Scripts{
-
 }
 @section Menu{
     @RenderPage("_Menu.cshtml")

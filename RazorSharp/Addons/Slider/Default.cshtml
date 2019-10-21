@@ -1,0 +1,30 @@
+﻿@{
+    var message = string.Empty;
+
+    var data = Enumerable.Empty<dynamic>();
+    var sqlSelect = string.Empty;
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        sqlSelect = "Select * From Widgets Where wName = 'slider'";
+        data = db.Query(sqlSelect);
+    }
+    if (data.Count() == 0)
+    {
+        Response.Redirect("~/Addons/Slider/Install");
+    }
+}
+@section Scripts {
+
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(message)
+<form method="post" action="">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header">Carousel Slider Settings</h2>
+            <p>Under construction...</p>
+        </div>
+    </div>
+</form>

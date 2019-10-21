@@ -1,0 +1,264 @@
+********** 9/12/2019 10:10:42 AM **********
+Inner Exception Type: System.Web.HttpException
+Inner Exception: The requested page 'Admin' was not found
+Inner Source: App_Web_t5a3yupe
+Inner Stack Trace: 
+   at ASP._Page_Default_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 17
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 9/12/2019 10:11:11 AM **********
+Inner Exception Type: System.Web.HttpException
+Inner Exception: The requested page 'Admin' was not found
+Inner Source: App_Web_t5a3yupe
+Inner Stack Trace: 
+   at ASP._Page_Default_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 17
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 9/12/2019 10:13:11 AM **********
+Inner Exception Type: System.Web.HttpException
+Inner Exception: The requested page 'Admin' was not found
+Inner Source: App_Web_t5a3yupe
+Inner Stack Trace: 
+   at ASP._Page_Default_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 17
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 9/12/2019 10:22:10 AM **********
+Inner Exception Type: System.Web.HttpException
+Inner Exception: The requested page 'Admin' was not found
+Inner Source: App_Web_t5a3yupe
+Inner Stack Trace: 
+   at ASP._Page_Default_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 17
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 10/21/2019 1:20:18 PM **********
+Inner Exception Type: Microsoft.CSharp.RuntimeBinder.RuntimeBinderException
+Inner Exception: Cannot perform runtime binding on a null reference
+Inner Source: Anonymously Hosted DynamicMethods Assembly
+Inner Stack Trace: 
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at ASP._Page_Addons_Gallery_addon_Gallery_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Addons\Gallery\addon_Gallery.cshtml:line 11
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageBase.<>c__DisplayClass3.<RenderPageCore>b__2(TextWriter writer)
+   at System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   at System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   at CallSite.Target(Closure , CallSite , _Page_Default_cshtml , Object )
+   at ASP._Page_Default_cshtml.<>c__DisplayClass3_1.<Execute>b__0() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 96
+   at System.Web.WebPages.WebPageBase.<>c__DisplayClass7.<RenderSection>b__5(TextWriter tw)
+   at System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   at System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   at ASP._Page_Layouts__Slate_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Layouts\_Slate.cshtml:line 66
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageBase.<>c__DisplayClass3.<RenderPageCore>b__2(TextWriter writer)
+   at System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   at System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   at System.Web.WebPages.WebPageBase.RenderSurrounding(String partialViewName, Action`1 body)
+   at System.Web.WebPages.WebPageBase.PopContext()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 10/21/2019 2:12:22 PM **********
+Inner Exception Type: System.Data.SqlServerCe.SqlCeException
+Inner Exception: The column name is not valid. [ Node name (if any) = ,Column name = Id ]
+Inner Source: SQL Server Compact ADO.NET Data Provider
+Inner Stack Trace: 
+   at System.Data.SqlServerCe.SqlCeCommand.ProcessResults(Int32 hr)
+   at System.Data.SqlServerCe.SqlCeCommand.CompileQueryPlan()
+   at System.Data.SqlServerCe.SqlCeCommand.ExecuteCommand(CommandBehavior behavior, String method, ResultSetOptions options)
+   at System.Data.SqlServerCe.SqlCeCommand.ExecuteNonQuery()
+   at WebMatrix.Data.Database.Execute(String commandText, Object[] args)
+   at CallSite.Target(Closure , CallSite , Database , String , Object , Object , Object , String )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecuteVoid6[T0,T1,T2,T3,T4,T5](CallSite site, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+   at ASP._Page_Addons_Gallery_Edit_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Addons\Gallery\Edit.cshtml:line 46
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageBase.<>c__DisplayClass40_0.<RenderPageCore>b__0(TextWriter writer)
+   at System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   at System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   at ASP._Page_Admin_ManageAddon_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Admin\ManageAddon.cshtml:line 26
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.StartPage.RunPage()
+   at System.Web.WebPages.StartPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 10/21/2019 2:15:17 PM **********
+Inner Exception Type: System.Data.SqlServerCe.SqlCeException
+Inner Exception: The column name is not valid. [ Node name (if any) = ,Column name = Id ]
+Inner Source: SQL Server Compact ADO.NET Data Provider
+Inner Stack Trace: 
+   at System.Data.SqlServerCe.SqlCeCommand.ProcessResults(Int32 hr)
+   at System.Data.SqlServerCe.SqlCeCommand.CompileQueryPlan()
+   at System.Data.SqlServerCe.SqlCeCommand.ExecuteCommand(CommandBehavior behavior, String method, ResultSetOptions options)
+   at System.Data.SqlServerCe.SqlCeCommand.ExecuteNonQuery()
+   at WebMatrix.Data.Database.Execute(String commandText, Object[] args)
+   at CallSite.Target(Closure , CallSite , Database , String , Object , Object , Object , String )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecuteVoid6[T0,T1,T2,T3,T4,T5](CallSite site, T0 arg0, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+   at ASP._Page_Addons_Gallery_Edit_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Addons\Gallery\Edit.cshtml:line 46
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageBase.<>c__DisplayClass40_0.<RenderPageCore>b__0(TextWriter writer)
+   at System.Web.WebPages.HelperResult.WriteTo(TextWriter writer)
+   at System.Web.WebPages.WebPageBase.Write(HelperResult result)
+   at ASP._Page_Admin_ManageAddon_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Admin\ManageAddon.cshtml:line 26
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.StartPage.RunPage()
+   at System.Web.WebPages.StartPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 10/21/2019 2:43:23 PM **********
+Inner Exception Type: Microsoft.CSharp.RuntimeBinder.RuntimeBinderException
+Inner Exception: Cannot perform runtime binding on a null reference
+Inner Source: Anonymously Hosted DynamicMethods Assembly
+Inner Stack Trace: 
+   at CallSite.Target(Closure , CallSite , Object )
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at ASP._Page_Addons_Gallery_Edit_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Addons\Gallery\Edit.cshtml:line 11
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+
+********** 10/21/2019 3:27:41 PM **********
+Inner Exception Type: System.Web.HttpException
+Inner Exception: The requested page 'Admin' was not found
+Inner Source: App_Web_f2anfrgg
+Inner Stack Trace: 
+   at ASP._Page_Default_cshtml.Execute() in C:\Users\grant\Development\ASP.NET\RazorSharp\RazorSharp\Default.cshtml:line 17
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy(IEnumerable`1 executors)
+   at System.Web.WebPages.WebPage.ExecutePageHierarchy()
+   at System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+Exception Type: System.Web.HttpUnhandledException
+Exception: Exception of type 'System.Web.HttpUnhandledException' was thrown.
+Source: Global.asax
+Stack Trace: 
+   at System.Web.WebPages.WebPageHttpHandler.HandleError(Exception e)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContextBase httpContext)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequestInternal(HttpContext context)
+   at System.Web.WebPages.WebPageHttpHandler.ProcessRequest(HttpContext context)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+

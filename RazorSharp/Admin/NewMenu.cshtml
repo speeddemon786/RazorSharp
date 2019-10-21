@@ -38,7 +38,7 @@
                 {
                     var sqlInsert = "Insert Into Menu (mName, mURL, mOrderId, mTarget, mParentId) Values (@0, @1, @2, @3, @4)";
                     db.Execute(sqlInsert, mName, mUrl, mOrderId, mTarget, mParentId);
-                    message = Helpers.AlertSuccess("User Successfully Saved!");
+                    message = Helpers.AlertSuccess("Menu Successfully Saved!");
                 }
             }
             catch (Exception ex)

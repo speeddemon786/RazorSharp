@@ -5,7 +5,7 @@
 
     var dirInfo = new DirectoryInfo(Server.MapPath("~/Addons"));
     var listAddons = dirInfo.GetDirectories("*", SearchOption.TopDirectoryOnly);
-    var addon = Request["addon"];
+    var addon = Request["delete"];
     if (!addon.IsEmpty())
     {
         using (var db = Database.Open(Functions.GetDbName()))
@@ -58,9 +58,6 @@
         }
     }
 }
-@section Scripts {
-
-}
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
@@ -95,7 +92,7 @@
                             <td><a href="@Href("~/Admin/ManageAddon?addon=" + @d.Name)"><i class="glyphicon glyphicon-edit"></i></a></td>
                             <td>@Functions.AddonsMenu(d.Name)</td>
                             <td><a href="@Href("~/Admin/AllAddons?download=" + @d.Name)"><i class="glyphicon glyphicon-download"></i></a></td>
-                            <td><a href="@Href("~/Admin/AllAddons?addon=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
+                            <td><a href="@Href("~/Admin/AllAddons?delete=" + @d.Name)" onclick="return confirm('Are You Sure You Want To Delete This Addon?')" title="Delete"><i class="glyphicon glyphicon-remove"></i></a></td>
                         </tr>
                     }
                 }

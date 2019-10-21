@@ -195,7 +195,7 @@ public static class Functions
         return wBackups;
     }
 
-    //
+    // return list of string menu items
     public static List<string> MenuItems()
     {
         IEnumerable<dynamic> pages;

@@ -37,9 +37,6 @@
     var grid = new WebGrid(data);
     var parentItems = data.Where(d => d.mParentId == 0);
 }
-@section Scripts{
-
-}
 @section Menu{
     @RenderPage("_Menu.cshtml")
 }
@@ -59,7 +56,7 @@
                     grid.Column("mTarget", "Target"),
                     grid.Column("Delete", format:@<a href="@Href("~/Admin/AllMenu?id=" + item.Id)" onclick="return confirm('Are You Sure You Want To Delete This Menu Item?')" title="Delete"><i class="glyphicon glyphicon-remove" alt="Delete"></i></a>)
                 )
-    )
+        )
         <div class="col-sm-6">
             @grid.PagerList(mode: WebGridPagerModes.All, paginationStyle: "pagination pagination-small pagination-right")
         </div>

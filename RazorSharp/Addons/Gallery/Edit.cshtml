@@ -1,0 +1,153 @@
+﻿@using System.Text;
+@{
+    var gId = Request["id"];
+    var message = string.Empty;
+    dynamic data = null;
+    // get gallery from db
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        const string sqlSelect = " Select * From Gallery Where gId=@0";
+        data = db.QuerySingle(sqlSelect, gId);
+    }
+    var gName = data.gName;
+    var pName = data.pName;
+    var pNames = Functions.PageNames(pName);
+    var dateAdded = data.dateAdded;
+
+    //enumerate images from gallery folder based on ID
+    StringBuilder sb = new StringBuilder();
+    if (!string.IsNullOrEmpty(gId))
+    {
+        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Uploads/Gallery/" + gId + "/"));
+        foreach (FileInfo fi in di.GetFiles().Where(f => (!f.Name.Contains("thumb_"))))
+        {
+            sb.AppendFormat("<a title=\"Click Image To Delete\" href=\"ManageAddon?addon=Gallery&action=Delete&Id={1}&Img={0}\" onclick=\"return confirm('Are You Sure You Want To Delete This Image?')\" ><img style=\"margin:10px 0px;\" class=\"img-responsive col-lg-3 col-md-6 col-sm-12\" src=\"../Uploads/Gallery/{1}/Thumb_{0}\"></a>\n", fi.Name, gId);
+        }
+    }
+    else
+    {
+        sb.Append("<p>There are currently no images loaded in the gallery.</p>");
+    }
+
+    if (IsPost)
+    {
+        gName = Request["gName"];
+        pName = Request["pName"];
+        dateAdded = Request["dateAdded"];
+        Validation.RequireField("pName");
+        Validation.RequireField("gName");
+        if (Validation.IsValid())
+        {
+            //update gallery in db
+            using (var db = Database.Open(Functions.GetDbName()))
+            {
+                const string sqlUpdate = "Update Gallery Set gName=@0, pName=@1, dateAdded=@2 Where gId=@3";
+                db.Execute(sqlUpdate, gName, pName, dateAdded, gId);
+                message = Helpers.AlertSuccess("Gallery Successfully Updated!");
+            }
+            var fileName = "";
+            var thumbFileName = "";
+            var fileSavePath = "";
+            int numFiles = Request.Files.Count;
+            var path = String.Concat("~/Uploads/Gallery/", gId, "/");
+            if (!Directory.Exists(Server.MapPath(path)))
+            {
+                Directory.CreateDirectory(Server.MapPath(path));
+            }
+            for (int i = 0; i < numFiles; i++)
+            {
+                var uploadedFile = Request.Files[i];
+                if (uploadedFile.ContentLength > 0)
+                {
+                    // save original image
+                    fileName = Path.GetFileName(uploadedFile.FileName);
+                    fileSavePath = Server.MapPath(path + fileName);
+                    uploadedFile.SaveAs(fileSavePath);
+                    WebImage photo = new WebImage(fileSavePath);
+                    if (photo != null)
+                    {
+                        // Create Thumbnail And Save
+                        thumbFileName = "thumb_" + Path.GetFileName(photo.FileName);
+                        photo.Resize(width: 400, height: 300, preserveAspectRatio: true, preventEnlarge: true).Crop(1, 1);
+                        photo.Save(path + thumbFileName);
+                    }
+                }
+            }
+            Response.Redirect("~/Admin/ManageAddon?addon=Gallery&action=Default&messageId=6");
+        }
+        message = Helpers.AlertWarning("Please Complete All Required Fields!");
+    }
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(message)
+<form action="" method="post" enctype="multipart/form-data">
+    <div class="col-lg-12">
+        <h2 class="page-header"><a href="@Href("~/Admin/ManageAddon?addon=Gallery&action=Default")">All Galleries</a> | Edit Gallery</h2>
+        <p>Use the form below to edit the current gallery. Please note, only 1 gallery can be created per page!<br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+        <div class="col-lg-6">
+
+            <div class="form-group">
+                @Html.Label("Name", "gName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("gName", gName, new { @maxlength = "100", @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The name of the gallery eg Product Images"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Select Page", "pName", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.DropDownList("pName", pNames, new { @class = "form-control" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="Select page you will add the gallery on"></i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Select Images", "mPage", new { @class = "control-label" })
+                <div class="input-group">
+                    @FileUpload.GetHtml(initialNumberOfFiles: 1, allowMoreFilesToBeAdded: true, includeFormTag: false, addText: "Add New Image", uploadText: "Upload")
+                </div>
+            </div>
+
+            <p class="form-actions">
+                @Html.Hidden("dateAdded", dateAdded)
+                <input class="btn btn-primary" type="submit" value="Update Gallery" />
+            </p>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <h2>Current Gallery Images(Click Image To Delete)</h2>
+        @Html.Raw(sb.ToString())
+    </div>
+</form>
+<script type='text/javascript'>
+$(window).on('load', function() {
+    $('form').validate({
+        rules: {
+            gName: {
+                required: true
+            },
+            pName: {
+                required: true
+            }
+        },
+        highlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            if(element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+});
+</script>

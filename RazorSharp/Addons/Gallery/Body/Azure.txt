@@ -1,0 +1,1 @@
+﻿This text document is here to ensure when publishing to Azure that this folder is copied over even when empty otherwise site breaks.
