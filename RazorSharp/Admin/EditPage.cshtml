@@ -29,7 +29,8 @@
 
     if (IsPost)
     {
-        if (!Request["btnUpdate"].IsEmpty()){
+        if (!Request["btnUpdate"].IsEmpty())
+        {
 
             //create backup copy before update
             using (var db = Database.Open(Functions.GetDbName()))
@@ -49,7 +50,7 @@
             pAuthor = User.Identity.Name;
             pBody = false;
             pBodyFile = Request["pBodyFile"];
-            if(Request["pBody"] == "on")
+            if (Request["pBody"] == "on")
             {
                 pBody = true;
             }
@@ -70,7 +71,7 @@
         else
         {
             //from backup - load current version selected
-            if (Request["Backup"].AsInt() ==0)
+            if (Request["Backup"].AsInt() == 0)
             {
                 Response.Redirect("~/Admin/EditPage?id=" + pId);
             }
@@ -111,48 +112,73 @@
     }
 }
 @section scripts {
-<script type="text/javascript">
-    $(function(){
-        $('#pText').summernote({ height: 400 });
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#Backup").change(function () {
-            $("#editPage").submit();
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#pText').summernote({
+                height: 400,
+                minHeight: null,
+                maxHeight: null,
+                focus: true,
+                onImageUpload: function (files, editor, welEditable) {
+                    sendFile(files[0], editor, welEditable);
+                }
+            });
+            function sendFile(file, editor, welEditable) {
+                data = new FormData();
+                data.append("file", file);
+                $.ajax({
+                    data: data,
+                    type: "POST",
+                    url: 'SaveImage.cshtml',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (url) {
+                        editor.insertImage(welEditable, url);
+                    },
+                    error: function (url) {
+                        alert('Error : ' + url);
+                    }
+                });
+            }
         });
-    });
-</script>
-<script type='text/javascript'>
-$(window).on('load', function() {
-    $('form').validate({
-        rules: {
-            pName: {
-                required: true
-            },
-            pMasterPage: {
-                required: true
-            }
-        },
-        highlight: function(element) {
-            $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
-        },
-        unhighlight: function(element) {
-            $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function(error, element) {
-            if(element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
-
-});
-</script>
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Backup").change(function () {
+                $("#editPage").submit();
+            });
+        });
+    </script>
+    <script type='text/javascript'>
+        $(window).on('load', function () {
+            $('form').validate({
+                rules: {
+                    pName: {
+                        required: true
+                    },
+                    pMasterPage: {
+                        required: true
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+                },
+                unhighlight: function (element) {
+                    $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+                },
+                errorElement: 'span',
+                errorClass: 'help-block',
+                errorPlacement: function (error, element) {
+                    if (element.parent('.input-group').length) {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+        });
+    </script>
 }
 @section menu{
     @RenderPage("_Menu.cshtml")
@@ -207,10 +233,10 @@ $(window).on('load', function() {
                     </span>
                 </div>
             </div>
-            </div>
-            <div class="col-lg-12">
-               @Html.TextArea("pText", @pText, new { @rows = "15", @cols = "80", @class = "form-control" })
-            </div>
+        </div>
+        <div class="col-lg-12">
+            @Html.TextArea("pText", @pText, new { @rows = "15", @cols = "80", @class = "form-control" })
+        </div>
         <div class="col-lg-6">
             <div class="form-group">
                 @Html.Label("Page Backups", "Backup", new { @class = "control-label" })
@@ -223,34 +249,34 @@ $(window).on('load', function() {
                 <input type="submit" name="btnUpdate" value="Update Page" class="btn btn-primary" />
             </p>
         </div>
-        </div>
+    </div>
 
-        <div class="col-lg-12">
-            <h2 class="page-header">Edit Meta Tags</h2>
-            <div class="col-lg-6">
-                <div class="form-group">
-                    @Html.Label("Title", "mTitle", new { @class = "control-label" })
-                    <div class="input-group">
-                        @Html.TextBox("mTitle", @mTitle, new { @class = "form-control", @maxlength = "70" })
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: Title"></i></span>
-                    </div>
+    <div class="col-lg-12">
+        <h2 class="page-header">Edit Meta Tags</h2>
+        <div class="col-lg-6">
+            <div class="form-group">
+                @Html.Label("Title", "mTitle", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("mTitle", @mTitle, new { @class = "form-control", @maxlength = "70" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: Title"></i></span>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.Label("Description", "mDescription", new { @class = "control-label" })
-                    <div class="input-group">
-                        @Html.TextBox("mDescription", @mDescription, new { @class = "form-control", @maxlength = "200" })
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: Description"></i></span>
-                    </div>
+            <div class="form-group">
+                @Html.Label("Description", "mDescription", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("mDescription", @mDescription, new { @class = "form-control", @maxlength = "200" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: Description"></i></span>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.Label("Keywords", "mKeywords", new { @class = "control-label" })
-                    <div class="input-group">
-                        @Html.TextBox("mKeywords", @mKeywords, new { @class = "form-control", @maxlength = "200" })
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: keywords"></i></span>
-                    </div>
+            <div class="form-group">
+                @Html.Label("Keywords", "mKeywords", new { @class = "control-label" })
+                <div class="input-group">
+                    @Html.TextBox("mKeywords", @mKeywords, new { @class = "form-control", @maxlength = "200" })
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="Meta tag: keywords"></i></span>
                 </div>
             </div>
         </div>
+    </div>
 </form>

@@ -9,14 +9,14 @@
         if (data.Count() == 0)
         {
             //Create Tables
-            var ct = "CREATE TABLE [Gallery] ( [gId] int NOT NULL IDENTITY (1,1), [gName] nvarchar(100) NOT NULL, [pName] nvarchar(250) NOT NULL, [dateAdded] datetime NOT NULL );";
+            var ct = "CREATE TABLE [Gallery] ( [gId] int NOT NULL IDENTITY (1,1), [gName] nvarchar(100) NOT NULL, [pName] nvarchar(250) NOT NULL, [gEditDate] datetime NOT NULL );";
             var at = "ALTER TABLE [Gallery] ADD CONSTRAINT [PK__Gallery_Id] PRIMARY KEY ([gId]);";
 
             db.Execute(ct);
             db.Execute(at);
 
             ct = "ALTER TABLE [Gallery] ADD CONSTRAINT [UQ__Gallery__gId] UNIQUE ([gId]);";
-            at = "Insert into Gallery ( gName, pName, dateAdded ) values (@0, @1, @2)";
+            at = "Insert into Gallery ( gName, pName, gEditDate ) values (@0, @1, @2)";
             db.Execute(ct);
             db.Execute(at, "Sample Gallery", "default", DateTime.Now);
 

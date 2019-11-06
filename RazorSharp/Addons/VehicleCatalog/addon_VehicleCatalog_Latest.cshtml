@@ -1,0 +1,33 @@
+﻿@{
+   IEnumerable<dynamic> data;
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        const string sqlSelect = "Select Top 3 * From VehicleCatalog Order By vEditDate Desc;";
+        data = db.Query(sqlSelect);
+    }
+}
+<div class="maincontent">
+    <h2>Latest Arrivals</h2>
+    <div class="row">
+        @foreach (var car in data)
+        {
+            DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Uploads/VehicleCatalog/" + car.vId + "/"));
+            string vImage = "~/Uploads/VehicleCatalog/" + car.vId + "/" + di.GetFiles().Select(f => f.Name).FirstOrDefault(file => file != "Thumbs.db");
+            <div class="col-lg-4">
+                <div class="gallery">
+                    <h3>@string.Concat(car.vMake, " ", car.vModel)</h3>
+                    <img src="@Href(vImage)" class="img-responsive img-thumbnail" />
+                    <div>
+                        <table>
+                            <tr>
+                                <td><i class="glyphicon glyphicon-info-sign"></i> @car.vYear</td>
+                                <td><i class="glyphicon glyphicon-info-sign"></i> @car.vTransmission</td>
+                                <td><i class="glyphicon glyphicon-info-sign"></i> @car.vTransmission</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

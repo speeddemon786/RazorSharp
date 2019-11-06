@@ -1,0 +1,114 @@
+﻿@{
+
+    var message = string.Empty;
+    var pageSize = 9;
+    var totalPages = 0;
+    var count = 0;
+    var page = Request["page"].AsInt(1);
+    var offset = (page - 1) * pageSize;
+
+    IEnumerable<dynamic> data;
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        const string sqlCount = "Select Count(*) From VehicleCatalog";
+        const string sqlSelect = "Select * From VehicleCatalog Order By vEditDate Desc Offset @0 Rows Fetch Next @1 Rows Only;";
+
+        count = (int)db.QueryValue(sqlCount);
+        totalPages = (int)Math.Ceiling((double)count / pageSize);
+        data = db.Query(sqlSelect, offset, pageSize);
+    }
+}
+<p>Page @page of @totalPages</p>
+<div class="row">
+    @if(Enumerable.Count(data) == 0)
+    {
+        <div class="col-lg-12"><p>There are no results to show.</p></div>
+    }
+    @for (int i = 0; i < Enumerable.Count(data); i++)
+    {
+        if (i > 0 && i % 3 == 0)
+        {
+        @:</div><div class="row">
+            // close and start new row
+        }
+        <!---->
+        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Uploads/VehicleCatalog/" + data.ElementAt(i).vId + "/"));
+        var firstImage = di.GetFiles().Select(f => f.Name).FirstOrDefault(file => file != "Thumbs.db");
+        string vImage = string.Empty;
+        if (string.IsNullOrEmpty(firstImage))
+        {
+            vImage = "~/Uploads/VehicleCatalog/placeholder.png";
+        }
+        else
+        {
+            vImage = "~/Uploads/VehicleCatalog/" + data.ElementAt(i).vId + "/" + firstImage;
+        }
+
+        <div class="col-lg-4">
+            <div class="gallery">
+                <img src="@Href(vImage)" class="img-responsive img-thumbnail" />
+                <div>@string.Concat(data.ElementAt(i).vMake, " ", data.ElementAt(i).vModel)</div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-responsive table-striped">
+                    <tr>
+                        <td>Make</td>
+                        <td>@data.ElementAt(i).vMake</td>
+                    </tr>
+                    <tr>
+                        <td>Model</td>
+                        <td>@data.ElementAt(i).vModel</td>
+                    </tr>
+                    <tr>
+                        <td>Body Shape</td>
+                        <td>@data.ElementAt(i).vBodyType</td>
+                    </tr>
+                    <tr>
+                        <td>Gearbox</td>
+                        <td>@data.ElementAt(i).vTransmission</td>
+                    </tr>
+                    <tr>
+                        <td>Transmission Drive</td>
+                        <td>@data.ElementAt(i).vTransmissionDrive</td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Type</td>
+                        <td>@data.ElementAt(i).vFuelType</td>
+                    </tr>
+                    <tr>
+                        <td>Variant</td>
+                        <td>@data.ElementAt(i).vVariant</td>
+                    </tr>
+                    <tr>
+                        <td>Year</td>
+                        <td>@data.ElementAt(i).vYear</td>
+                    </tr>
+                    <tr>
+                        <td>Color</td>
+                        <td>@data.ElementAt(i).vColor</td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td>@string.Concat("R", data.ElementAt(i).vPrice)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <nav aria-label="...">
+            <ul class="pagination pagination-sm">
+                @{
+                    for (var i = 1; i <= totalPages + 1; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Href(string.Concat("~/", Context.GetRouteValue("PageName"), "?page=", i))">@i</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

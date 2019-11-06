@@ -1,0 +1,279 @@
+﻿@using Microsoft.Web.Helpers
+@using System.Text;
+@{
+
+    var vId = Request["id"];
+    var message = string.Empty;
+    dynamic data = null;
+    // get vehicle from db
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        const string sqlSelect = " Select * From VehicleCatalog Where vId=@0";
+        data = db.QuerySingle(sqlSelect, vId);
+    }
+    var vMake = data.vMake;
+    var vModel = data.vModel;
+    var vYear = data.vYear;
+    var vColor = data.vColor;
+    var vDescription = data.vDescription;
+    var vBodyType = data.vBodyType;
+    var vOdometer = data.vOdometer;
+    var vVariant = data.vVariant;
+    var vTransmission = data.vTransmission;
+    var vTransmissionDrive = data.vTransmissionDrive;
+    var vFuelType = data.vFuelType;
+    var vPrice = data.vPrice;
+    var vEditDate = data.vEditDate;
+
+    StringBuilder sb = new StringBuilder();
+    if (!string.IsNullOrEmpty(vId))
+    {
+        DirectoryInfo di = new DirectoryInfo(Server.MapPath("~/Uploads/VehicleCatalog/" + vId + "/"));
+        foreach (FileInfo fi in di.GetFiles().Where(f => (!f.Name.Contains("thumb_"))))
+        {
+            sb.AppendFormat("<a title=\"Click Image To Delete\" href=\"ManageAddon?addon=VehicleCatalog&action=Delete&Id={1}&Img={0}\" onclick=\"return confirm('Are You Sure You Want To Delete This Image?')\" ><img style=\"margin:10px 0px;\" class=\"img-responsive col-lg-3 col-md-6 col-sm-12\" src=\"../Uploads/VehicleCatalog/{1}/{0}\"></a>\n", fi.Name, vId);
+        }
+    }
+    else
+    {
+        sb.Append("<p>There are currently no images loaded in the gallery.</p>");
+    }
+
+    if (IsPost)
+    {
+        vMake = Request["vMake"];
+        vModel = Request["vModel"];
+        vYear = Request["vYear"];
+        vColor = Request["vColor"];
+        vDescription = Request["vDescription"];
+        vBodyType = Request["vBodyType"];
+        vOdometer = Request["vOdometer"];
+        vVariant = Request["vVariant"];
+        vTransmission = Request["vTransmission"];
+        vTransmissionDrive = Request["vTransmissionDrive"];
+        vFuelType = Request["vFuelType"];
+        vPrice = Request["vPrice"];
+        vEditDate = DateTime.Now;
+        Validation.RequireField("vMake");
+        Validation.RequireField("vModel");
+        Validation.RequireField("vYear");
+        Validation.RequireField("vColor");
+        Validation.RequireField("vDescription");
+        Validation.RequireField("vBodyType");
+        Validation.RequireField("vOdometer");
+        Validation.RequireField("vVariant");
+        Validation.RequireField("vTransmission");
+        Validation.RequireField("vTransmissionDrive");
+        Validation.RequireField("vFuelType");
+        Validation.RequireField("vPrice");
+        if (Validation.IsValid())
+        {
+            // save vehicle to db
+            using (var db = Database.Open(Functions.GetDbName()))
+            {
+                const string sqlUpdate = "Update VehicleCatalog Set vMake=@0, vModel=@1, vYear=@2, vColor=@3, vDescription=@4, vBodyType=@5, vOdometer=@6, vVariant=@7, vTransmission=@8, vTransmissionDrive=@9, vFuelType=@10, vPrice=@11, vEditDate=@12 Where vId=@13";
+                db.Execute(sqlUpdate, vMake, vModel, vYear, vColor, vDescription, vBodyType, vOdometer, vVariant, vTransmission, vTransmissionDrive, vFuelType, vPrice, vEditDate, vId);
+            }
+            WebImage photo = null;
+            var path = String.Concat("~/Uploads/VehicleCatalog/", vId, "/");
+            if (!Directory.Exists(Server.MapPath(path)))
+            {
+                Directory.CreateDirectory(Server.MapPath(path));
+            }
+
+            photo = WebImage.GetImageFromRequest();
+            if (photo != null)
+            {
+                var dirVehicleImage = new DirectoryInfo(Server.MapPath(path));
+                dirVehicleImage.EmptyDirectory();
+                photo.Resize(width: 400, height: 250, preserveAspectRatio: true, preventEnlarge: true);
+                path = Server.MapPath(path + Path.GetFileName(photo.FileName));
+                photo.Save(path);
+            }
+            Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=5");
+        }
+        message = Helpers.AlertWarning("Please Complete All Required Fields!");
+    }
+}
+@section Menu{
+    @RenderPage("~/Admin/_Menu.cshtml")
+}
+@Html.Raw(message)
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="col-lg-12">
+            <h2 class="page-header"><a href="@Href("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default")">All Vehicles</a> | Edit Vehicle</h2>
+            <p>Use the form below to update the vehicle in the catalog. <br />Should you require help for any of the fields, please hover over the <i class="glyphicon glyphicon-info-sign" title="Hover for help."></i> icon.</p>
+            <div class="col-lg-6">
+
+                <div class="form-group">
+                    @Html.Label("Vehicle Make", "vMake", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vMake", vMake, new { @maxlength = "250", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The make of the vehicle eg BMW"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Vehicle Model", "vModel", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vModel", vModel, new { @maxlength = "250", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The model of the vehicle eg 420i"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Year", "vYear", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vYear", vYear, new { @maxlength = "6", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The year of the vehicle eg @DateTime.Now.Year"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Color", "vColor", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vColor", vColor, new { @maxlength = "100", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The color of the vehicle eg Black"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Vehicle Description", "vDescription", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextArea("vDescription", vDescription, new { @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The description for the vehicle"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Body Type", "vBodyType", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vBodyType", vBodyType, new { @maxlength = "250", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-info-sign" title="The body type of the vehicle eg Grand coupe"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Odometer", "vOdometer", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vOdometer", vOdometer, new { @maxlength = "10", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The vehicle odometer reading"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Variant", "vVariant", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vVariant", vVariant, new { @maxlength = "250", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The vehicle variant eg M sport"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Transmission", "vTransmission", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vTransmission", vTransmission, new { @maxlength = "100", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The vehicle transmission type"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Transmission Drive", "vTransmissionDrive", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vTransmissionDrive", vTransmissionDrive, new { @maxlength = "100", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The vehicle transmission drive location eg FWD"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Fuel Type", "vFuelType", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vFuelType", vFuelType, new { @maxlength = "100", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The fuel type used by the vehicle eg Petrol"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Price", "vPrice", new { @class = "control-label" })
+                    <div class="input-group">
+                        @Html.TextBox("vPrice", vPrice, new { @maxlength = "100", @class = "form-control" })
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-question-sign" title="The vehicle price - Numbers only"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Select Vehicle Image", "mPage", new { @class = "control-label" })
+                    <div class="input-group">
+                        @FileUpload.GetHtml(initialNumberOfFiles: 1, allowMoreFilesToBeAdded: false, includeFormTag: false, addText: "Add New Image", uploadText: "Upload")
+                    </div>
+                </div>
+
+                <p class="form-actions">
+                    <input class="btn btn-primary" type="submit" value="Update Vehicle" />
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <h2>Current Vehicle Image (Click Image To Delete)</h2>
+            @Html.Raw(sb.ToString())
+        </div>
+    </form>
+<script type='text/javascript'>
+    $(window).on('load', function () {
+        $('form').validate({
+            rules: {
+                vMake: {
+                    required: true
+                },
+                vModel: {
+                    required: true
+                },
+                vYear: {
+                    required: true
+                },
+                vColor: {
+                    required: true
+                },
+                vDescription: {
+                    required: true
+                },
+                vBodyType: {
+                    required: true
+                },
+                vOdometer: {
+                    required: true
+                },
+                vVariant: {
+                    required: true
+                },
+                vTransmission: {
+                    required: true
+                },
+                vTransmissionDrive: {
+                    required: true
+                },
+                vFuelType: {
+                    required: true
+                },
+                vPrice: {
+                    required: true
+                }
+            },
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            unhighlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+            },
+            errorElement: 'span',
+            errorClass: 'help-block',
+            errorPlacement: function (error, element) {
+                if (element.parent('.input-group').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+    });
+</script>

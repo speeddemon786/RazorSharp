@@ -1,0 +1,20 @@
+﻿@{
+    Layout = null;
+    var fileName = string.Empty;
+    if (IsPost)
+    {
+        var fileSavePath = "";
+        var request = HttpContext.Current.Request;
+        var path = @"~/Uploads/";
+        foreach (var f in request.Files.AllKeys)
+        {
+            HttpPostedFile file = request.Files[f];
+            fileSavePath = Server.MapPath(path + file.FileName);
+            file.SaveAs(fileSavePath);
+            var strUrl = Request.Url.GetLeftPart(UriPartial.Authority) + VirtualPathUtility.ToAbsolute("~/");
+            fileName = String.Concat(strUrl, "Uploads/", file.FileName);
+        }
+        Response.ContentType = "text/plain";
+        Response.Write(fileName);
+    }
+}

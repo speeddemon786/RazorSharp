@@ -12,7 +12,7 @@
     var gName = data.gName;
     var pName = data.pName;
     var pNames = Functions.PageNames(pName);
-    var dateAdded = data.dateAdded;
+    var gEditDate = data.gEditDate;
 
     //enumerate images from gallery folder based on ID
     StringBuilder sb = new StringBuilder();
@@ -33,7 +33,7 @@
     {
         gName = Request["gName"];
         pName = Request["pName"];
-        dateAdded = Request["dateAdded"];
+        gEditDate = DateTime.Now;
         Validation.RequireField("pName");
         Validation.RequireField("gName");
         if (Validation.IsValid())
@@ -41,9 +41,8 @@
             //update gallery in db
             using (var db = Database.Open(Functions.GetDbName()))
             {
-                const string sqlUpdate = "Update Gallery Set gName=@0, pName=@1, dateAdded=@2 Where gId=@3";
-                db.Execute(sqlUpdate, gName, pName, dateAdded, gId);
-                message = Helpers.AlertSuccess("Gallery Successfully Updated!");
+                const string sqlUpdate = "Update Gallery Set gName=@0, pName=@1, gEditDate=@2 Where gId=@3";
+                db.Execute(sqlUpdate, gName, pName, gEditDate, gId);
             }
             var fileName = "";
             var thumbFileName = "";
@@ -112,7 +111,6 @@
             </div>
 
             <p class="form-actions">
-                @Html.Hidden("dateAdded", dateAdded)
                 <input class="btn btn-primary" type="submit" value="Update Gallery" />
             </p>
         </div>

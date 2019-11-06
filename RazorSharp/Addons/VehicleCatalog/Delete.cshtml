@@ -1,0 +1,37 @@
+﻿@{
+    //delete gallery if id is passed as querystring
+    var deleteId = Request["id"];
+    var deleteImg = Request["img"];
+
+    // Here we are deleting vehicle image
+    if(!deleteId.IsEmpty() && !deleteImg.IsEmpty())
+    {
+        var path = Server.MapPath("~/Uploads/VehicleCatalog/" + deleteId + "/" + deleteImg);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+        Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Edit&id=" + deleteId);
+    }
+
+    // Here we are deleteing entire vehicle
+    if (!deleteId.IsEmpty() && deleteImg.IsEmpty())
+    {
+        // Delete vehicle from db
+        using (var db = Database.Open(Functions.GetDbName()))
+        {
+            const string sqlDelete = "Delete From VehicleCatalog Where vId=@0";
+            db.Execute(sqlDelete, deleteId);
+        }
+        // Delete vehicle image directory
+        var galleryPath = Server.MapPath("~/Uploads/VehicleCatalog/" + deleteId + "/");
+        if (Directory.Exists(galleryPath))
+        {
+            var dirAddon = new DirectoryInfo(galleryPath);
+            dirAddon.EmptyDirectory();
+            Directory.Delete(galleryPath, true);
+        }
+        Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=3");
+    }
+    Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=4");
+}

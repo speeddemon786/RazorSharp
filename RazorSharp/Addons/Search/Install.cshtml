@@ -1,42 +1,41 @@
 ﻿@{
-    Layout = "~/Admin/_Layout.cshtml";
-    Page.Title = "Search Results - Install";
-    Page.Heading = "Installing...";
     var message = string.Empty;
-
     var data = Enumerable.Empty<dynamic>();
+    var data1 = Enumerable.Empty<dynamic>();
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        var sqlSelect = "Select * From Widgets Where wName = 'search-results'";
+        var sqlSelect = "Select * From Widgets Where wName = 'search-form'";
+        var sql1Select = "Select * From Widgets Where wName = 'search-results'";
         data = db.Query(sqlSelect);
+        data1 = db.Query(sql1Select);
     }
-
-    if (data.Count() == 0){
-
-        //insert widget
-        var wName = "search-results";
-        var wFile = "addon_SearchResults.cshtml";
-        var wTitle = "Search Results - Do Not Modify";
-        var wText = "To change this widget please go to Addons";
+    if (data.Count() == 0 || data1.Count() == 0)
+    {
+        //search form widget
+        var wName = "search-form";
+        var wFile = "addon_Search_Form.cshtml";
+        var wTitle = "Search Form";
+        var wText = "To change this widget please go to Addons -> Search";
         var wEditDate = DateTime.Now;
+        //search results widget
+        var w1Name = "search-results";
+        var w1File = "addon_Search_Results.cshtml";
+        var w1Title = "Search Reults";
+        var w1Text = "To change this widget please go to Addons -> Search";
+        var w1EditDate = DateTime.Now;
 
         using (var db = Database.Open(Functions.GetDbName()))
         {
             var sqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
             db.Execute(sqlInsert, wName, wTitle, wText, wEditDate, wFile);
+            db.Execute(sqlInsert, w1Name, w1Title, w1Text, w1EditDate, w1File);
+            
         }
-        Response.Redirect(Request.UrlReferrer.ToString());
+        Response.Redirect("~/Admin/ManageAddon?addon=Search&action=Default&messageId=1");
     }
     else
     {
-        message = Helpers.AlertWarning("The Addon Install Has Already Been Done!");
+        Response.Redirect("~/Admin/ManageAddon?addon=Search&action=Default&messageId=2");
     }
-
-}
-@section Scripts {
-
-}
-@section Menu{
-    @RenderPage("~/Admin/_Menu.cshtml")
 }
 @Html.Raw(message)

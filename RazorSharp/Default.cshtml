@@ -92,16 +92,21 @@
                         else
                         { //Addons : addon_name.cshtml
                             var addon = row.wFile.ToString().Replace("addon_", "");
-                            addon = addon.Replace(".cshtml", "");
+                            if (addon.Contains("_"))
+                            {
+                                addon = addon.Substring(0, addon.LastIndexOf("_") + 1).Replace("_", "");
+                            }
+                            else
+                            {
+                                addon = addon.Replace(".cshtml", "");
+                            }
                             Write(RenderPage("~/Addons/" + addon +"/" + row.wFile, row));
                         }
                     }
                 }
 
             });
-
         }
         sn = sectionName;
-
     }
 }

@@ -4,7 +4,7 @@
     var pNames = Functions.PageNames("");
     var pName = Request["pName"];
     var gName = Request["gName"];
-    var dateAdded = DateTime.Now;
+    var gEditDate = DateTime.Now;
 
     Validation.RequireField("pName");
     Validation.RequireField("gName");
@@ -17,8 +17,8 @@
             // save gallery to db
             using (var db = Database.Open(Functions.GetDbName()))
             {
-                const string sqlInsert = "Insert Into Gallery (gName, pName, dateAdded) Values (@0, @1, @2)";
-                db.Execute(sqlInsert, gName, pName, dateAdded);
+                const string sqlInsert = "Insert Into Gallery (gName, pName, gEditDate) Values (@0, @1, @2)";
+                db.Execute(sqlInsert, gName, pName, gEditDate);
                 gId = db.GetLastInsertId();
             }
             var fileName = "";

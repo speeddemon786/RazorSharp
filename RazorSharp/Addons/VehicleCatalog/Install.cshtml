@@ -1,0 +1,64 @@
+﻿@{
+    var message = string.Empty;
+    var data = Enumerable.Empty<dynamic>();
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        var sqlSelect = "Select * From Widgets Where wName = 'vehicle-catalog'";
+        data = db.Query(sqlSelect);
+
+        if (data.Count() == 0)
+        {
+            //Create & Alter Tables
+            var ct = "CREATE TABLE [VehicleCatalog] ([vId] int IDENTITY (1,1) NOT NULL, [vMake] nvarchar(250) NOT NULL, [vModel] nvarchar(250) NOT NULL, [vYear] int NOT NULL, [vColor] nvarchar(100) NULL, [vDescription] ntext NOT NULL, [vBodyType] nvarchar(250) NOT NULL, [vOdometer] int NULL, [vVariant] nvarchar(250) NOT NULL, [vTransmission] nvarchar(100) NULL, [vTransmissionDrive] nvarchar(100) NULL, [vFuelType] nvarchar(100) NULL, [vPrice] money NOT NULL, [vEditDate] datetime NOT NULL);";
+            var at = "ALTER TABLE [VehicleCatalog] ADD CONSTRAINT [PK_VehicleCatalog] PRIMARY KEY ([vId]);";
+
+            db.Execute(ct);
+            db.Execute(at);
+
+            at = "ALTER TABLE [VehicleCatalog] ADD CONSTRAINT [UQ__VehicleCatalog__pId] UNIQUE ([vId]);";
+            db.Execute(at);
+
+            //Insert Catalog Widget
+            var wName = "vehicle-catalog";
+            var wFile = "addon_VehicleCatalog.cshtml";
+            var wTitle = "Vehicle Catalog Addon";
+            var wText = "To change this widget please go to Addons -> VehicleCatalog";
+            var wEditDate = DateTime.Now;
+            //Insert Latest vehicles Widget
+            var w1Name = "vehicle-catalog-latest";
+            var w1File = "addon_VehicleCatalog_Latest.cshtml";
+            var w1Title = "Vehicle Catalog Latest Vehicles Addon";
+            var w1Text = "To change this widget please go to Addons -> VehicleCatalog";
+            var w1EditDate = DateTime.Now;
+
+            var sqlInsert = "Insert into Widgets (wName, wTitle, wText, wEditDate, wFile) values (@0, @1, @2, @3, @4)";
+            db.Execute(sqlInsert, wName, wTitle, wText, wEditDate, wFile);
+            db.Execute(sqlInsert, w1Name, w1Title, w1Text, w1EditDate, w1File);
+
+            //create initial folder for first id inserted
+            var path = Server.MapPath("~/Uploads/VehicleCatalog/");
+            if (!Directory.Exists(path))
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                    WebClient webClient = new WebClient();
+                    var remoteFileUrl = new Uri("https://via.placeholder.com/400x250.png?text=Vehicle+Image+coming+Soon", UriKind.Absolute);
+                    var localFileName = path + "placeholder.png";
+                    webClient.DownloadFileAsync(remoteFileUrl, localFileName);
+                    Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=1");
+                }
+                catch (Exception)
+                {
+                    message = Helpers.AlertWarning("The Vehicle Catalog Install Has Completed But There Is Was A Folder Permission Error And The Vehicle Catalog Image Upload Folder Could Not Be Created. Please Ensure The Uploads Director Has Write Permissions Set");
+                }
+            }
+            Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=1");
+        }
+        else
+        {
+            Response.Redirect("~/Admin/ManageAddon?addon=VehicleCatalog&action=Default&messageId=2");
+        }
+    }
+}
+@Html.Raw(message)

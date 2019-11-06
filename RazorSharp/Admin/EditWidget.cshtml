@@ -91,8 +91,34 @@
 }
 @section Scripts{
 <script type="text/javascript">
-    $(function(){
-        $('#wText').summernote({ height: 400 });
+    $(document).ready(function () {
+        $('#wText').summernote({
+            height: 400,
+            minHeight: null,
+            maxHeight: null,
+            focus: true,
+            onImageUpload: function (files, editor, welEditable) {
+                sendFile(files[0], editor, welEditable);
+            }
+        });
+        function sendFile(file, editor, welEditable) {
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: 'SaveImage.cshtml',
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (url) {
+                    editor.insertImage(welEditable, url);
+                },
+                error: function (url) {
+                    alert('Error : ' + url);
+                }
+            });
+        }
     });
 </script>
 <script type="text/javascript">

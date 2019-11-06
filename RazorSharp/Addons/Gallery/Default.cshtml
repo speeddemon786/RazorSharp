@@ -45,7 +45,7 @@
     //get list of Galleries
     using (var db = Database.Open(Functions.GetDbName()))
     {
-        sqlSelect = "Select gId, gName, pName, dateAdded From Gallery Order By dateAdded Desc";
+        sqlSelect = "Select gId, gName, pName, gEditDate From Gallery Order By gEditDate Desc";
         data = db.Query(sqlSelect);
     }
     var grid = new WebGrid(source: data, rowsPerPage: 10);
@@ -61,7 +61,7 @@
                     grid.Column("Edit", header: "Edit Gallery", format: @<a href="@Href("~/Admin/ManageAddon?Addon=Gallery&Action=Edit&id=" + item.gId)" title="Edit Gallery"><i class="glyphicon glyphicon-edit"></i></a>),
                     grid.Column("gName", "Gallery Name"),
                     grid.Column("pName", "Page Name"),
-                    grid.Column("Date Added", format: @<i>@item.dateAdded</i>),
+                    grid.Column("Last Edited", format: @<i>@item.gEditDate</i>),
                     grid.Column("Delete", format: @<a href="@Href("~/Admin/ManageAddon?Addon=Gallery&Action=Delete&id=" + item.gId)" title="Delete" onclick="return confirm('Are You Sure You Want To Delete This Gallery?')"><i class="glyphicon glyphicon-remove"></i></a>)
                 )
          )

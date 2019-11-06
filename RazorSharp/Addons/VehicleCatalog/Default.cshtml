@@ -1,0 +1,72 @@
+﻿@{
+    var message = string.Empty;
+    var data = Enumerable.Empty<dynamic>();
+    var sqlSelect = string.Empty;
+    //check if plugin is installed, otherwise run install
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        sqlSelect = "Select * From Widgets Where wName = 'vehicle-catalog'";
+        data = db.Query(sqlSelect);
+    }
+    if (data.Count() == 0)
+    {
+        Response.Redirect("~/Addon/VehicleCatalog/Install");
+    }
+    //Handle messages
+    var messageId = Request["messageId"];
+    if (!messageId.IsEmpty())
+    {
+        switch (messageId)
+        {
+            case "1":
+                message = Helpers.AlertSuccess("Plugin Installed Successfully!");
+                break;
+            case "2":
+                message = Helpers.AlertWarning("Plugin Is Already Installed!");
+                break;
+            case "3":
+                message = Helpers.AlertSuccess("Vehicle Successfully Deleted!");
+                break;
+            case "4":
+                message = Helpers.AlertWarning("Vehicle Not Deleted (No Vehicle Specified)!");
+                break;
+            case "5":
+                message = Helpers.AlertSuccess("Vehicle Successfully Created!");
+                break;
+            case "6":
+                message = Helpers.AlertSuccess("Vehicle Successfully Updated!");
+                break;
+            default:
+                message = Helpers.AlertDanger("Unknown MessageId");
+                break;
+        }
+    }
+    //get list of Vehicles
+    using (var db = Database.Open(Functions.GetDbName()))
+    {
+        sqlSelect = "Select vId, vMake, vModel, vEditDate From VehicleCatalog Order By vEditDate Desc";
+        data = db.Query(sqlSelect);
+    }
+    var grid = new WebGrid(source: data, rowsPerPage: 10);
+}
+@Html.Raw(message)
+<div class="col-lg-12">
+    <h2 class="page-header">All Vehicles | <a href="@Href("~/Admin/ManageAddon?addon=VehicleCatalog&action=Add")">Add Vehicle</a></h2>
+    <p>Below are a list of all the current vehicles on the site. Click <a href="@Href("~/Admin/AllPages")">HERE</a> to add the vehicle catalog a page.</p>
+    <p>The vehicle catalog contains 2 widgets, 1 for the full catalog and 1 for the latest additons which shows the latest 3 vehicles added to the vehicle catalog.</p>
+    <div class="table-responsive">
+        @grid.GetHtml(
+                tableStyle: "table table-bordered table-hover table-striped",
+                columns: grid.Columns(
+                    grid.Column("Edit", header: "Edit Vehicle", format: @<a href="@Href("~/Admin/ManageAddon?Addon=VehicleCatalog&Action=Edit&id=" + item.vId)" title="Edit Vehicle"><i class="glyphicon glyphicon-edit"></i></a>),
+                    grid.Column("vMake", "Vehicle Make"),
+                    grid.Column("vModel", "Vehicle Model"),
+                    grid.Column("Last Edited", format: @<i>@item.vEditDate</i>),
+                    grid.Column("Delete", format: @<a href="@Href("~/Admin/ManageAddon?Addon=VehicleCatalog&Action=Delete&id=" + item.vId)" title="Delete" onclick="return confirm('Are You Sure You Want To Delete This Vehicle?')"><i class="glyphicon glyphicon-remove"></i></a>)
+                )
+        )
+        <div class="col-sm-6">
+            @grid.PagerList(mode: WebGridPagerModes.All, paginationStyle: "pagination pagination-small pagination-right")
+        </div>
+    </div>
+</div>

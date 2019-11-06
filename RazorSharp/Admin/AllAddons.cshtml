@@ -8,28 +8,30 @@
     var addon = Request["delete"];
     if (!addon.IsEmpty())
     {
+        //find all matching addon files and loop through them and remove them from widgets table
+        var addonPath = Server.MapPath("~/Addons/" + addon);
+        string[] addons = Directory.GetFiles(addonPath, String.Concat("addon_", addon, "*"));
         using (var db = Database.Open(Functions.GetDbName()))
         {
-            // Get Widget ID
-            var sqlSelect = "Select id From Widgets Where wName=@0";
-            var wId = db.QueryValue(sqlSelect, addon);
-            if (string.IsNullOrEmpty(wId))
+            foreach (string a in addons)
             {
-                wId = "0";
+                // Get Widget ID
+                var sqlSelect = "Select id From Widgets Where wFile=@0";
+                var wFile = Path.GetFileName(a);
+                var wId = db.QueryValue(sqlSelect, wFile);
+                if (wId != null)
+                {
+                    // Delete Widget
+                    string sqlDelete = "Delete From Widgets Where Id=@0";
+                    db.Execute(sqlDelete, wId);
+                }
             }
-            // Delete Widget
-            const string sqlDelete = "Delete From Widgets Where Id=@0";
-            db.Execute(sqlDelete, wId);
-            // Delete Addon Files
-            var addonPath = Server.MapPath("~/Addons/" + addon);
-            if (Directory.Exists(addonPath))
-            {
-                var dirAddon = new DirectoryInfo(addonPath);
-                dirAddon.EmptyDirectory();
-                Directory.Delete(addonPath, true);
-            }
-            Response.Redirect("~/Admin/AllAddons?messageId=1");
         }
+        // Delete Addon Files
+        var dirAddon = new DirectoryInfo(addonPath);
+        dirAddon.EmptyDirectory();
+        Directory.Delete(addonPath, true);
+        Response.Redirect("~/Admin/AllAddons?messageId=1");
     }
     var download = Request["download"];
     if (!download.IsEmpty())
